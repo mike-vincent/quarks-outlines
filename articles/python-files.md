@@ -7,6 +7,7 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
+cover_image: ./python-files.png
 published: true
 id: 3116424
 date: '2025-12-19T23:01:11Z'
