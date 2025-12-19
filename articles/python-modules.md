@@ -2,7 +2,7 @@
 title: "Quark's Outlines: Python Modules"
 description: "How do you organize Python code with modules? Learn about this key feature."
 tags: [python, programming, beginners, tutorial]
-series: "Quark's Outlines Series"
+series: "Quark's Outlines"
 published: true
 ---
 
