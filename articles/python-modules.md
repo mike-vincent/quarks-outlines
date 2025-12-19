@@ -1,9 +1,15 @@
 ---
-title: "Quark's Outlines: Python Modules"
-description: "How do you organize Python code with modules? Learn about this key feature."
-tags: [python, programming, beginners, tutorial]
-series: "Quark's Outlines"
+title: 'Quark''s Outlines: Python Modules'
+description: How do you organize Python code with modules? Learn about this key feature.
+tags:
+  - python
+  - programming
+  - beginners
+  - tutorial
+series: Quark's Outlines
 published: true
+id: 3116425
+date: '2025-12-19T23:01:11Z'
 ---
 
 # Quark's Outlines: Python Modules

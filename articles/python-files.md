@@ -1,9 +1,15 @@
 ---
-title: "Quark's Outlines: Python Files"
-description: "How does Python work with files? Learn to read and write files."
-tags: [python, programming, beginners, tutorial]
-series: "Quark's Outlines"
+title: 'Quark''s Outlines: Python Files'
+description: How does Python work with files? Learn to read and write files.
+tags:
+  - python
+  - programming
+  - beginners
+  - tutorial
+series: Quark's Outlines
 published: true
+id: 3116424
+date: '2025-12-19T23:01:11Z'
 ---
 
 # Quark's Outlines: Python Files
