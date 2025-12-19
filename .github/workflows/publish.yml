@@ -13,8 +13,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Publish to Dev.to
-        uses: protiumx/blogpub@v0.6.0
+        uses: sinedied/publish-devto@v2
         with:
-          gh_token: ${{ github.token }}
-          devto_api_key: ${{ secrets.DEVTO_API_KEY }}
-          articles_folder: articles
+          devto_key: ${{ secrets.DEVTO_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'articles/*.md'
+          branch: main
+          dry_run: false
