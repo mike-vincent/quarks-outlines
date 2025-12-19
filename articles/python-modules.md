@@ -3,7 +3,6 @@ title: "Quark's Outlines: Python Modules"
 description: "How do you organize Python code with modules? Learn about this key feature."
 tags: [python, programming, beginners, tutorial]
 published: true
-cover_image: ./python-modules.png
 ---
 
 # Quark's Outlines: Python Modules
