@@ -9,6 +9,7 @@ tags:
 series: Quark's Outlines
 cover_image: ./python-files.png
 published: false
+id: 3116461
 ---
 
 # Quark's Outlines: Python Files

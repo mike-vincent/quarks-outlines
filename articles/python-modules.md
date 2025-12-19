@@ -7,8 +7,10 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/o4d5sj.png
+cover_image: 'https://files.catbox.moe/o4d5sj.png'
 published: true
+id: 3116460
+date: '2025-12-19T23:37:12Z'
 ---
 
 # Quark's Outlines: Python Modules
