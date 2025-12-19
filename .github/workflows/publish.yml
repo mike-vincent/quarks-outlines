@@ -5,6 +5,9 @@ on:
     branches: ['main']
     paths: ['articles/*.md']
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
