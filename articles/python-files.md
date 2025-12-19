@@ -229,3 +229,4 @@ Did you find this helpful? Let me know by clicking the like button below. I'd lo
 ---
 
 [**Mike Vincent**](https://mikevincent.dev) is an American software engineer and app developer from Los Angeles, California. [More about Mike Vincent](https://mikevincent.dev)
+
