@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/85vs18.png
+cover_image: 'https://files.catbox.moe/85vs18.png'
 published: false
+id: 3116489
 ---
 
 # Quark’s Outlines: Python Traceback Objects  

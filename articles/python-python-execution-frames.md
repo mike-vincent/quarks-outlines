@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/nbfuin.png
+cover_image: 'https://files.catbox.moe/nbfuin.png'
 published: false
+id: 3116487
 ---
 
 # Quark’s Outlines: Python Execution Frames  

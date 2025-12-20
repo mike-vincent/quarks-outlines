@@ -7,8 +7,8 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-
 published: false
+id: 3116476
 ---
 
 # Quark's Outlines: Python Arithmetic Conversions  

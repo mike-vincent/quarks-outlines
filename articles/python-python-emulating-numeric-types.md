@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/xsxdaw.png
+cover_image: 'https://files.catbox.moe/xsxdaw.png'
 published: false
+id: 3116485
 ---
 
 # Quark’s Outlines: Python Emulating Numeric Types  

@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/joodth.png
+cover_image: 'https://files.catbox.moe/joodth.png'
 published: false
+id: 3116486
 ---
 
 # Quark’s Outlines: Python Expressions  

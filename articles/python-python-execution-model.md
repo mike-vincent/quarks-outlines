@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/ca08hz.png
+cover_image: 'https://files.catbox.moe/ca08hz.png'
 published: false
+id: 3116483
 ---
 
 # Quark’s Outlines: Python Execution Model  

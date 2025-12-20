@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/m8itun.png
+cover_image: 'https://files.catbox.moe/m8itun.png'
 published: false
+id: 3116484
 ---
 
 # Quark’s Outlines: Python Emulating Callable Objects  

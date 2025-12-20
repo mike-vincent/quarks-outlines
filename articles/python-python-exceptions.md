@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/2ot5te.png
+cover_image: 'https://files.catbox.moe/2ot5te.png'
 published: false
+id: 3116482
 ---
 
 # Quark’s Outlines: Python Exceptions  

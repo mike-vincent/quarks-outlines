@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/xrzcbi.png
+cover_image: 'https://files.catbox.moe/xrzcbi.png'
 published: false
+id: 3116480
 ---
 
 # Quark’s Outlines: Python Coercion Rules  

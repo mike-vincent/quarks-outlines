@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/7flwv4.png
+cover_image: 'https://files.catbox.moe/7flwv4.png'
 published: false
+id: 3116493
 ---
 
 # Quark’s Outlines: Python User-Defined Functions  

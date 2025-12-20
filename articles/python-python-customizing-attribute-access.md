@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/u3cwcz.png
+cover_image: 'https://files.catbox.moe/u3cwcz.png'
 published: false
+id: 3116481
 ---
 
 # Quark’s Outlines: Python Customizing Attribute Access  

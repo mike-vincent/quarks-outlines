@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/5jl37u.png
+cover_image: 'https://files.catbox.moe/5jl37u.png'
 published: false
+id: 3116491
 ---
 
 # Quark’s Outlines: Python Name Spaces  
