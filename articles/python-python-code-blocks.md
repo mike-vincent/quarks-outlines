@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/6wul0c.png
+cover_image: 'https://files.catbox.moe/6wul0c.png'
 published: false
+id: 3117333
 ---
 
 # Quark’s Outlines: Python Code Blocks  

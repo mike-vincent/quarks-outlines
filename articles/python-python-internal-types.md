@@ -1,14 +1,15 @@
 ---
 title: 'Quark''s Outlines: Python Internal Types'
-description: What are Python internal types? Learn about code objects, frames, and more.
+description: 'What are Python internal types? Learn about code objects, frames, and more.'
 tags:
   - python
   - programming
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/x1vo02.png
+cover_image: 'https://files.catbox.moe/x1vo02.png'
 published: false
+id: 3117334
 ---
 
 # Quark’s Outlines: Python Internal Types  

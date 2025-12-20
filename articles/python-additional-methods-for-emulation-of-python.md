@@ -7,8 +7,10 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/s9aoos.png
+cover_image: 'https://files.catbox.moe/s9aoos.png'
 published: true
+id: 3117330
+date: '2025-12-20T12:11:16Z'
 ---
 
 # Quark’s Outlines: Additional Methods for Emulation of Python Sequence Types  

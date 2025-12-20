@@ -7,8 +7,9 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: https://files.catbox.moe/ikn2vw.png
+cover_image: 'https://files.catbox.moe/ikn2vw.png'
 published: false
+id: 3117331
 ---
 
 # Quark’s Outlines: Python Basic Customization  
