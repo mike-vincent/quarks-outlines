@@ -1,0 +1,43 @@
+name: Scheduled Publish
+
+on:
+  schedule:
+    # Every Saturday at 12:00 UTC
+    - cron: '0 12 * * 6'
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  publish-next:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find and publish next article
+        run: |
+          # Find first article with published: false
+          for file in articles/*.md; do
+            if grep -q "published: false" "$file"; then
+              echo "Publishing: $file"
+              sed -i 's/published: false/published: true/' "$file"
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git add "$file"
+              git commit -m "Scheduled publish: $(basename "$file" .md)"
+              git push
+              exit 0
+            fi
+          done
+          echo "No unpublished articles found"
+
+      - name: Publish to Dev.to
+        uses: sinedied/publish-devto@v2
+        with:
+          devto_key: ${{ secrets.DEVTO_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'articles/*.md'
+          branch: main
+          dry_run: false
