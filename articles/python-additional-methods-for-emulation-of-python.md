@@ -8,7 +8,7 @@ tags:
   - tutorial
 series: Quark's Outlines
 cover_image: https://files.catbox.moe/s9aoos.png
-published: false
+published: true
 ---
 
 # Quark’s Outlines: Additional Methods for Emulation of Python Sequence Types  
