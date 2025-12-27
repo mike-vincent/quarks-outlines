@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/5zgeuc.png'
 published: true
 id: 3116478
+date: '2025-12-27T12:11:39Z'
 ---
 
 # Quark’s Outlines: Emulating Sequence and Mapping Types in Python  
