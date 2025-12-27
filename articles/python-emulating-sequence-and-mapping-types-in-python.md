@@ -8,7 +8,7 @@ tags:
   - tutorial
 series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/5zgeuc.png'
-published: false
+published: true
 id: 3116478
 ---
 
