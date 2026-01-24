@@ -1,0 +1,302 @@
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref2.html"><IMG SRC="fm2html-previous.gif">Previous Chapter</A>
+<!-- This file was created with the fm2html filter.
+The filter is copyright Norwegian Telecom Research and
+was programmed by Jon Stephenson von Tetzchner. -->
+
+
+<H2><A NAME="REF19057"> Chapter 3:  Data model</A></H2>
+<H3><A NAME="HDR0"> 3.1  Objects, values and types</A></H3>
+<P><I>Objects</I> are Python's abstraction for data. All data in a Python program is represented by objects or by relations between objects. (In conformance to Von Neumann's model of a "stored program computer", code is also represented by objects.)
+<P>Every object has an identity, a type and a value. An object's <I>identity</I> never changes once it has been created; you may think of it as the object's address in memory. The `is' operator compares the identity of two objects; the `id()' function returns an integer representing its identity (currently implemented as its address). An object's <I>type</I> is also unchangeable. It determines the operations that an object supports (e.g. "does it have a length?") and also defines the possible values for objects of that type. The `type()' function returns an object's type (which is an object itself). The <I>value</I> of some objects can change. The `==' operator compares the value of two objects. Objects whose value can change are said to be <I>mutable</I>; objects whose value is unchangeable once they are created are called <I>immutable</I>. An object's (im)mutability is determined by its type; for instance, numbers, strings and tuples are immutable, while dictionaries and lists are mutable.
+<P>Objects are never explicitly destroyed; however, when they become unreachable they may be garbage-collected. An implementation is allowed to postpone garbage collection or omit it altogether  it is a matter of implementation quality how garbage collection is implemented, as long as no objects are collected that are still reachable. (Implementation note: the current implementation uses a reference-counting scheme which collects most objects as soon as they become unreachable, but never collects garbage containing circular references.)
+<P>Note that the use of the implementation's tracing or debugging facilities may keep objects alive that would normally be collectable. Also note that catching an exception with a `try...except' statement may keep objects alive.
+<P>Some objects contain references to "external" resources such as open files or windows. It is understood that these resources are freed when the object is garbage-collected, but since garbage collection is not guaranteed to happen, such objects also provide an explicit way to release the external resource, usually a <CODE>close()</CODE> method. Programs are strongly recommended to always explicitly close such objects. The `try...finally' statement provides a convenient way to do this.
+<P>Some objects contain references to other objects; these are called <I>containers</I>. Examples of containers are tuples, lists and dictionaries. The references are part of a container's value. In most cases, when we talk about the value of a container, we imply the values, not the identities of the contained objects; however, when we talk about the (im)mutability of a container, only the identities of the immediately contained objects are implied. So, if an immutable container (like a tuple) contains a reference to a mutable object, its value changes if that mutable object is changed.
+<P>Types affect almost all aspects of object behavior. Even the importance of object identity is affected in some sense: for immutable types, operations that compute new values may actually return a reference to any existing object with the same type and value, while for mutable objects this is not allowed. E.g. after ``a = 1; b = 1'', <CODE>a</CODE> and <CODE>b</CODE> may or may not refer to the same object with the value one, depending on the implementation, but after ``c = []; d = []'', <CODE>c</CODE> and <CODE>d </CODE>are guaranteed to refer to two different, unique, newly created empty lists. (Note that ``c = d = []'' assigns the same object to both c and d.)
+
+<H3><A NAME="REF22319"> 3.2  The standard type hierarchy</A></H3>
+<P>Below is a list of the types that are built into Python. Extension modules written in C can define additional types. Future versions of Python may add types to the type hierarchy (e.g. rational numbers, efficiently stored arrays of integers, etc.).
+<P>Some of the type descriptions below contain a paragraph listing `special attributes'. These are attributes that provide access to the implementation and are not intended for general use. Their definition may change in the future. There are also some `generic' special attributes, not listed with the individual objects: <CODE>__methods__ </CODE>is a list of the method names of a built-in object, if it has any; <CODE>__members__</CODE> is a list of the data attribute names of a built-in object, if it has any.
+
+<DL>
+<DD><B>None</B>This type has a single value. There is a single object with this value. This object is accessed through the built-in name <CODE>None</CODE>. It is used to signify the absence of a value in many situations, e.g. it is returned from functions that don't explicitly return anything. Its truth value is false.
+<BR>
+<DD><B>Ellipsis </B>This type has a single value. There is a single object with this value. This object is accessed through the built-in name <CODE>Ellipsis</CODE>. It is used to indicate the presence of the ``...'' syntax in a slice. Its truth value is true.
+<BR>
+<DD><B>Numbers </B>These are created by numeric literals and returned as results by arithmetic operators and arithmetic built-in functions. Numeric objects are immutable; once created their value never changes. Python numbers are of course strongly related to mathematical numbers, but subject to the limitations of numerical representation in computers.
+<BR></DL>
+
+
+<UNKNOWN>Python distinguishes between integers and floating point numbers:</UNKNOWN>
+<UNKNOWN><B>Integers </B>These represent elements from the mathematical set of whole numbers</UNKNOWN>
+<UNKNOWN>There are two types of integers:</UNKNOWN>
+<UNKNOWN><B>Plain integers</B> These represent numbers in the range -2147483648 through 2147483647. (The range may be larger on machines with a larger natural word size, but not smaller.) When the result of an operation falls outside this range, the exception <CODE>OverflowError</CODE> is raised. For the purpose of shift and mask operations, integers are assumed to have a binary, 2's complement notation using 32 or more bits, and hiding no bits from the user (i.e., all 4294967296 different bit patterns correspond to different values).</UNKNOWN>
+<UNKNOWN><B>Long integers </B>These represent numbers in an unlimited range, subject to available (virtual) memory only. For the purpose of shift and mask operations, a binary representation is assumed, and negative numbers are represented in a variant of 2's complement which gives the illusion of an infinite string of sign bits extending to the left.</UNKNOWN>
+<UNKNOWN>The rules for integer representation are intended to give the most meaningful interpretation of shift and mask operations involving negative integers and the least surprises when switching between the plain and long integer domains. For any operation except left shift, if it yields a result in the plain integer domain without causing overflow, it will yield the same result in the long integer domain or when using mixed operands.</UNKNOWN>
+
+<UNKNOWN><B>Floating point numbers </B>These represent machine-level double precision floating point numbers. You are at the mercy of the underlying machine architecture and C implementation for the accepted range and handling of overflow. Python does not support single-precision floating point numbers; the savings in CPU and memory usage that are usually the reason for using these is dwarfed by the overhead of using objects in Python, so there is no reason to complicate the language with two kinds of floating point numbers.</UNKNOWN>
+<UNKNOWN><B>Complex numbers </B>These represent complex numbers as a pair of machine-level double precision floating point numbers. The same caveats apply as for floating point numbers. The real and imaginary value of a complex number z can be retrieved through the attributes z.real and z.imag.</UNKNOWN>
+
+<DL>
+<DD><B>Sequences </B>These represent finite ordered sets indexed by natural numbers. The built-in function <CODE>len()</CODE> returns the number of items of a sequence. When the length of a sequence is n, the index set contains the numbers 0, 1, ..., n. Item i of sequence a is selected by a[i].
+<BR></DL>
+
+
+<UNKNOWN>Sequences also support slicing: <CODE>a[i:j]</CODE> selects all items with index k such that i&lt;=k&lt;j. When used as an expression, a slice is a sequence of the same type  this implies that the index set is renumbered so that it starts at 0 again.</UNKNOWN>
+<UNKNOWN>Sequences are distinguished according to their mutability:</UNKNOWN>
+<UNKNOWN><B>Immutable sequences </B>An object of an immutable sequence type cannot change once it is created. (If the object contains references to other objects, these other objects may be mutable and may be changed; however the array of objects directly referenced by an immutable object cannot change.)</UNKNOWN>
+<UNKNOWN>The following types are immutable sequences:</UNKNOWN>
+<UNKNOWN><B>Strings</B>The items of a string are characters. There is no separate character type; a character is represented by a string of one item. Characters represent (at least) 8-bit bytes. The built-in functions <CODE>chr()</CODE> and <CODE>ord()</CODE> convert between characters and nonnegative integers representing the byte values. Bytes with the values 0-127 usually represent the corresponding ASCII values, but the interpretation of values is up to the program. The string data type is also used to represent arrays of bytes, e.g. to hold data read from a file.</UNKNOWN>
+<UNKNOWN>(What should be done on systems whose native character set is not ASCII???)</UNKNOWN>
+<UNKNOWN><B>Tuples</B>The items of a tuple are arbitrary Python objects. Tuples of two or more items are formed by comma-separated lists of expressions. A tuple of one item (a `singleton') can be formed by affixing a comma to an expression (an expression by itself does not create a tuple, since parentheses must be usable for grouping of expressions). An empty tuple can be formed by enclosing `nothing' in parentheses: ``()''. </UNKNOWN>
+<UNKNOWN><B>Mutable sequences </B>Mutable sequences can be changed after they are created. The subscription and slicing notations can be used as the target of assignment and <CODE>del</CODE> (delete) statements. </UNKNOWN>
+<UNKNOWN>There is currently a single mutable sequence type:</UNKNOWN>
+<UNKNOWN><B>Lists</B>The items of a list are arbitrary Python objects. Lists are formed by placing a comma-separated list of expressions in square brackets. (Note that there are no special cases needed to form lists of length 0 or 1.)</UNKNOWN>
+<UNKNOWN>The optional module array provides an additional example of a mutable sequence type.</UNKNOWN>
+
+<DL>
+<DD><B>Mappings </B>These represent finite sets of objects indexed by arbitrary index sets. The subscript notation <CODE>a[k]</CODE> selects the item indexed by <CODE>k</CODE> from the mapping <CODE>a</CODE>; this can be used in expressions and as the target of assignments or <CODE>del</CODE> statements. The built-in function <CODE>len()</CODE> returns the number of items in a mapping.
+<BR>
+</DL>
+
+
+<UNKNOWN>There is currently a single intrinsic mapping type:</UNKNOWN>
+<UNKNOWN><B>Dictionaries </B>These represent finite sets of objects indexed by nearly arbitrary values. The only types of values not acceptable as keys are values containing lists or dictionaries or other mutable types that are compared by value rather than by object identity  the reason being that the efficient implementation of dictionaries requires a key's value to remain constant. Numeric types used for keys obey the normal rules for numeric comparison: if two numbers compare equal (e.g. 1 and 1.0) then they can be used interchangeably to index the same dictionary entry.</UNKNOWN>
+<UNKNOWN>Dictionaries are mutable; they are created by the <CODE>{...} </CODE>notation. (<A HREF="ref5.html#REF27031">See "Dictionary displays" on page28.</A>)</UNKNOWN>
+<UNKNOWN>The optional library modules dbm, gdbm and bsddb provide additional examples of mapping types.</UNKNOWN>
+
+<DL>
+<DD><B>Callable types </B>These are the types to which the function call operation (for invocation, <A HREF="ref5.html#REF41934">See "Calls" on page31.</A>) is applied:
+<BR></DL>
+
+
+<UNKNOWN><B>User-defined functions </B>A user-defined function object is created by a function definition. (<A HREF="ref7.html#REF27502">See "Function definitions" on page48.</A>)</UNKNOWN>
+<UNKNOWN>Special read-only attributes: func_doc or __doc__ is the function's documentation string, or None if unavailable; func_name or __name__ is the function's name; func_defaults is a tuple containing default argument values for those arguments that have defaults, or None if no arguments have a default value; <CODE>func_code</CODE> is the code object representing the compiled function body; <CODE>func_globals</CODE> is (a reference to) the dictionary that holds the function's global variables  it defines the global name space of the module in which the function was defined. Additional information about a function's definition can be retrieved from its code object; see the description of internal types below.</UNKNOWN>
+<UNKNOWN><B>User-defined methods </B>A user-defined method object (a.k.a. <I>object closure</I>) combines a class, a class instance (or None) and a user-defined function. Special read-only attributes: <CODE>im_self</CODE> is the instance object; <CODE>im_func</CODE> is the function object; im_class is the class that defined the method (which may be a base class of the class of which im_self is an instance); __doc__ is the method's documentation (same as im_func.__doc__); __name__ is the method name (same as im_func.__name__). </UNKNOWN>
+<UNKNOWN>User-defined method objects are created in two ways: when getting an attribute of a class that is a user-defined function object, or when getting an attributes of a class instance that is a user-defined function object. In the former case (class attribute), the im_self attribute is None, and the method object is said to be <I>unbound</I>; in the latter case (instance attribute), im_self is the instance, and the method object is said to be <I>bound</I>. For instance, when C is a class which contains a definition for a function f, C.f does not yield the function object f; rather, it yields an unbound method object m where m.im_class is C, m.im_function is f, and m.im_self is None. When x is a C instance, x.f yields a bound method object m where m.im_class is C, m.im_function is f, and m.im_self is x.</UNKNOWN>
+<UNKNOWN>When an unbound user-defined method object is called, the underlying function (im_func) is called, with the restriction that the first argument must be an instance of the proper class (im_class) or of a derived class thereof.</UNKNOWN>
+
+<UNKNOWN>When a bound user-defined method object is called, the underlying function (im_func) is called, inserting the class instance (im_self) in front of the argument list. For instance, when C is a class which contains a definition for a function f, and x is an instance of C, calling x.f(1) is equivalent to calling C.f(x, 1).</UNKNOWN>
+<UNKNOWN>Note that the transformation from function object to (unbound or bound) method object happens each time the attribute is retrieved from the class or instance. In some cases, a fruitful optimization is to assign the attribute to a local variable and call that local variable. Also notice that this transformation only happens for user-defined functions; other callable objects (and all non-callable objects) are retrieved without transformation.</UNKNOWN>
+<UNKNOWN><B>Built-in functions </B>A built-in function object is a wrapper around a C function. Examples of built-in functions are <CODE>len</CODE> and <CODE>math.sin</CODE> (math is a standard built-in module). The number and type of the arguments are determined by the C function. Special read-only attributes: __doc__ is the function's documentation string, or None if unavailable; __name__ is the function's name; __self__ is set to None (but see the next paragraph). </UNKNOWN>
+<UNKNOWN><B>Built-in methods </B>This is really a different disguise of a built-in function, this time containing an object passed to the C function as an implicit extra argument. An example of a built-in method is <CODE>list.append</CODE>, assuming <CODE>list</CODE> is a list object. In this case, the special read-only attribute __self__ is set to the object denoted by list. </UNKNOWN>
+<UNKNOWN><B>Classes </B>Class objects are described below. When a class object is called, a new class instance (also described below) is created and returned. This implies a call to the class's <CODE>__init__</CODE> method if it has one. Any arguments are passed on to the <CODE>__init__ </CODE>method  if there is no <CODE>__init__</CODE> method, the class must be called without arguments.</UNKNOWN>
+<UNKNOWN><B>Class instances </B>Class instances are described below. Class instances can be called as a function only when the class has a __call__ method; in this case, x(arguments) is a shorthand for x.__call__(arguments).</UNKNOWN>
+
+<DL>
+<DD><B>Modules </B>Modules are imported by the <CODE>import</CODE> statement. (<A HREF="ref6.html#REF17806">See "The import statement" on page43.</A>) A module object has a name space implemented by a dictionary object (this is the dictionary referenced by the <CODE>func_globals</CODE> attribute of functions defined in the module). Attribute references are translated to lookups in this dictionary, e.g. m.x is equivalent to m.__dict__["x"]. A module object does not contain the code object used to initialize the module (since it isn't needed once the initialization is done).
+<BR></DL>
+
+
+<UNKNOWN>Attribute assignment update the module's name space dictionary, e.g. ``m.x=1'' is equivalent to ``m.__dict__["x"] = 1''.</UNKNOWN>
+<UNKNOWN>Special read-only attribute: <CODE>__dict__</CODE> is the dictionary object that is the module's name space.</UNKNOWN>
+<UNKNOWN>Predefined (writable) attributes: <CODE>__name__ </CODE>is the module name; <CODE>__doc__</CODE> is the module's documentation string, or <CODE>None</CODE> if unavailable; __file__ is the pathname of the file from which the module was loaded, if it was loaded from a file. The __file__ attribute is not present for C modules that are statically linked into the interpreter; for extension modules loaded dynamically from a shared library, it is the pathname of the shared library file. </UNKNOWN>
+
+
+<DL>
+<DD><B>Classes</B> Class objects are created by class definitions (<A HREF="ref7.html#REF23237">See "Class definitions" on page49.</A>). A class has a name space implemented by a dictionary object. Class attribute references are translated to lookups in this dictionary, e.g. ``C.x'' is translated to ``C.__dict__["x"]''. When the attribute name is not found there, the attribute search continues in the base classes. The search is depth-first, left-to-right in the order of their occurrence in the base class list. When a class attribute reference would yield a user-defined function object, it is transformed into an unbound user-defined method object (see above). The im_class attribute of this method object is the class in which the function object was found, not necessarily the class for which the attribute reference was initiated. 
+<BR></DL>
+
+
+<UNKNOWN>Class attribute assignments update the class's dictionary, never the dictionary of a base class. </UNKNOWN>
+<UNKNOWN>A class object can be called as a function (see above) to yield a class instance (see below). </UNKNOWN>
+<UNKNOWN>Special read-only attributes: <CODE>__dict__</CODE> is the dictionary that is the class's name space; __name__ is the class name; <CODE>__bases__</CODE> is a tuple (possibly empty or a singleton) containing the base classes, in the order of their occurrence in the base class list. </UNKNOWN>
+<UNKNOWN>Predefined (writable) attribute: __doc__ is the class's documentation string, or None if undefined.</UNKNOWN>
+
+<DL>
+<DD><B>Class instances </B>A class instance is created by calling a class object as a function (see above). A class instance has a name space implemented as a dictionary, which is the first place where instance attributes are searched. When an attribute is not found there, the search continues with the class attributes. If a class attribute is found that is a user-defined function object (and in no other case), it is transformed into an unbound user-defined method object (see above). The im_class attribute of this method object is the class in which the function object was found, not necessarily the class of the instance for which the attribute reference was initiated. If no class attribute is found, and the object's class has a __getattr__ method, that is called to satisfy the lookup.
+<BR></DL>
+
+
+<UNKNOWN>Attribute assignments and deletions update the instance's dictionary, never a class's dictionary. If the class has a __setattr__ or __delattr__ method, this is called instead of updating the instance dictionary directly.</UNKNOWN>
+<UNKNOWN>Class instances can pretend to be numbers, sequences, mappings, or callable objects, and override various other special operations, if they have methods with certain special names. See <A HREF="ref3.html#REF32560">"Special method names" on page18</A>.</UNKNOWN>
+<UNKNOWN>Special read-only attributes: <CODE>__dict__</CODE> yields the attribute dictionary; <CODE>__class__</CODE> yields the instance's class.</UNKNOWN>
+
+<DL>
+<DD><B>Files</B>A file object represents an open file. It is a wrapper around a C standard I/O (<I>stdio</I>) file pointer. File objects are created by the <CODE>open()</CODE> built-in function, and also by <CODE>posix.popen()</CODE>, <CODE>posix.fdopen()</CODE> and the <CODE>makefile</CODE> method of socket objects. The objects <CODE>sys.stdin</CODE>, <CODE>sys.stdout</CODE> and <CODE>sys.stderr</CODE> are initialized to file objects corresponding to the interpreter's standard input, output and error streams. See the Python Library Reference for methods of file objects and other details.
+<BR>
+<DD><B>Internal types </B>A few types used internally by the interpreter are exposed to the user. Their definitions may change with future versions of the interpreter, but they are mentioned here for completeness. 
+<BR></DL>
+
+
+<UNKNOWN><B>Code objects </B>Code objects represent <I>byte-compile</I> executable Python code, or <I>bytecode</I>. The difference between a code object and a function object is that the function object contains an explicit reference to the function's globals (the name space dictionary of the module in which it was defined), while a code object contains no context; also the default argument values are stored in the function object, not in the code object (because they represent values calculated at run-time). Unlike function objects, code objects are immutable and contain no references (directly or indirectly) to mutable objects.</UNKNOWN>
+
+<UNKNOWN>Special read-only attributes: co_argcount is the number of positional arguments (including arguments with default values); co_nlocals is the number of local variables used by the function (including arguments); co_varnames is a tuple containing the names of the local variables (starting with the argument names); <CODE>co_code</CODE> is a string representing the sequence of bytecode instructions; <CODE>co_consts</CODE> is a tuple containing the literals used by the bytecode; <CODE>co_names</CODE> is a tuple containing the names used by the bytecode; <CODE>co_filename</CODE> is the filename from which the code was compiled; co_flags is an integer encoding a number of flags for the interpreter. The following flag bits are defined: bit 2 is set if the function uses the "*arguments'' syntax to accept an arbitrary number of positional arguments; bit 3 is set if the function uses the ``**keywords'' syntax to accept arbitrary keyword arguments; other bits are used internally or reserved for future use. The first item in co_consts is the documentation string of the function, or None if undefined. To find out the first line number of a function, you have to disassemble the bytecode instructions; the standard library module <CODE>codehack</CODE> defines a function getlineno() that returns the first line number of a code object. </UNKNOWN>
+<UNKNOWN><B>Frame objects </B>Frame objects represent execution frames. They may occur in traceback objects (see below).</UNKNOWN>
+<UNKNOWN>Special read-only attributes: <CODE>f_back</CODE> is to the previous stack frame (towards the caller), or <CODE>None</CODE> if this is the bottom stack frame; <CODE>f_code</CODE> is the code object being executed in this frame; <CODE>f_locals</CODE> is the dictionary used to look up locals variables; <CODE>f_globals</CODE> is used for global variables; f_builtins is used for built-in (intrinsic) names; f_restricted is a flag indicating whether the function is executing in restricted execution mode; f_owner is the class or module that defined the code, if any; <CODE>f_lineno</CODE> gives the current line number and <CODE>f_lasti</CODE> gives the precise instruction (this is an index into the instruction string of the code object). </UNKNOWN>
+<UNKNOWN>Special writable attributes: f_trace, if not None, is a function called at the start of each source code line (this is used by the debugger).</UNKNOWN>
+<UNKNOWN><A NAME="REF27144"><B>Traceback objects </B> Traceback objects represent a stack trace of an exception. A traceback object is created when an exception occurs. When the search for an exception handler unwinds the execution stack, at each unwound level a traceback object is inserted in front of the current traceback. When an exception handler is entered, (<A HREF="ref7.html#REF13811">See "The <CODE>try</CODE> statement" on page47.</A>), the stack trace is made available to the program as <CODE>sys.exc_traceback</CODE>. When the program contains no suitable handler, the stack trace is written (nicely formatted) to the standard error stream; if the interpreter is interactive, it is also made available to the user as <CODE>sys.last_traceback</CODE>.</A></UNKNOWN>
+<UNKNOWN>Special read-only attributes: <CODE>tb_next</CODE> is the next level in the stack trace (towards the frame where the exception occurred), or <CODE>None</CODE> if there is no next level; <CODE>tb_frame</CODE> points to the execution frame of the current level; <CODE>tb_lineno</CODE> gives the line number where the exception occurred; <CODE>tb_lasti</CODE> indicates the precise instruction. The line number and last instruction in the traceback may differ from the line number of its frame object if the exception occurred in a <CODE>try</CODE> statement with no matching <CODE>except</CODE> clause or with a <CODE>finally</CODE> clause. </UNKNOWN>
+<UNKNOWN><A NAME="REF18920"><B>Slice objects</B> Slice objects are used to represent slices when <I>extended slice syntax</I> is used (this is a slice using two colons, or multiple slices or ellipses separated by commas, e.g. a[i:j:step], a[i:j,k:l], or a[...,i:j]). They are also created by the built-in slice() function.</A></UNKNOWN>
+
+<UNKNOWN>Special read-only attributes: start is the lowerbound; stop is the upperbound; step is the step value; each is None if omitted. These attributes can have any type.</UNKNOWN>
+<H3><A NAME="REF32560"> 3.3  Special method names</A></H3>
+<P>This section describes how user-defined classes can customize their behavior or emulate the behavior of other object types. In the following, if a class defines a particular method, any class derived from it is also understood to define that method (implicitly).
+<P>A class can implement certain operations that are invoked by special syntax (such as arithmetic operations or subscripting and slicing) by defining methods with special names. For instance, if a class defines a method named <CODE>__getitem__</CODE>, and <CODE>x</CODE> is an instance of this class, then <CODE>x[i]</CODE> is equivalent to <CODE>x.__getitem__(i)</CODE>. (The reverse is not true; e.g. if <CODE>x</CODE> is a list object, <CODE>x.__getitem__(i)</CODE> is not equivalent to <CODE>x[i]</CODE>.) Except where mentioned, attempts to execute an operation raise an exception when no appropriate method is defined.
+<H4><A NAME="HDR1"> 3.3.1  Basic customization</A></H4>
+
+<DL>
+<DD><CODE>__init__(self, [args...]) </CODE>Called when the instance is created. The arguments are those that were passed to the class constructor expression. If a base class has an __init__ method the derived class's __init__ method must explicitly call it to ensure proper initialization of the base class part of the instance, e.g.``BaseClass.__init__(self,[args...])''.
+<BR>
+<DD><CODE>__del__(self) </CODE>Called when the instance is about to be destroyed. If a base class has a __del__ method the derived class's __del__ method must explicitly call it to ensure proper deletion of the base class part of the instance. e.g. ``BaseClass.__del__(self)''. Note that it is possible (though not recommended!) for the __del__ method to postpone destruction of the instance by creating a new reference to it. It may then be called at a later time when this new reference is deleted. It is not guaranteed that __del__ methods are called for objects that still exist when the interpreter exits.
+<BR></DL>
+
+
+<UNKNOWN>Note that ``del x'' doesn't directly call x.__del__()  the former decrements the reference count for x by one, and the latter is only called when its reference count reaches zero. Some common situations that may prevent the reference count of an object to go to zero include: circular references between objects (e.g. a doubly-linked list or a tree data structure with parent and child pointers); a reference to the object on the stack frame of a function that caught an exception (the traceback stored in sys.exc_traceback keeps the stack frame alive); or a reference to the object on the stack frame that raised an unhandled exception in interactive mode (the traceback stored in sys.last_traceback keeps the stack frame alive). The first situation can only be remedied by explicitly breaking the cycles; the latter two situations can be resolved by storing None in sys.exc_traceback or sys.last_traceback.</UNKNOWN>
+<UNKNOWN><I>Warning</I>: due to the precarious circumstances under which __del__ methods are invoked, exceptions that occur during their execution are <I>ignored</I>, and a warning is printed to sys.stderr instead. Also, when __del__ is invoked is response to a module being deleted (e.g. when execution of the program is done), other globals referenced by the __del__ method may already have been deleted. For this reason, __del__ methods should do the absolute minimum needed to maintain external invariants.</UNKNOWN>
+
+
+<DL>
+<DD><CODE>__repr__(self) </CODE>Called by the <CODE>repr()</CODE> built-in function and by string conversions (reverse quotes) to compute the "official" string representation of an object. This should normally look like a valid Python expression that can be used to recreate an object with the same value. 
+<BR>
+<DD><CODE>__str__(self) </CODE>Called by the <CODE>str()</CODE> built-in function and by the <CODE>print </CODE>statement compute the ``informal'' string representation of an object. This differs from __repr__ in that it doesn't have to look like a valid Python expression: a more convenient or concise representation may be used instead.
+<BR>
+<DD><CODE>__cmp__(self, other) </CODE>Called by all comparison operations. Should return a negative integer if <CODE>self</CODE><CODE>&lt;</CODE><CODE>other</CODE>, zero if <CODE>self</CODE><CODE>==</CODE><CODE>other</CODE>, a positive integer if <CODE>self</CODE><CODE>&gt;</CODE><CODE>other</CODE>. If no __cmp__ method is defined, class instances are compared by object identity ("address"). (Implementation note: due to limitations in the interpreter, exceptions raised by comparisons are <I>ignored</I>, and the outcome will be random in this case.)
+<BR>
+<DD><CODE>__hash__(self) </CODE>Called for the key object for dictionary operations, and by the built-in function hash(). Should return a 32-bit integer usable as a hash value for dictionary operations. The only required property is that objects which compare equal have the same hash value; it is advised to somehow mix together (e.g. using exclusive or) the hash values for the components of the object that also play a part in comparison of objects. If no __hash__ method is defined, class instances are hashed by object identity (``address''). If a class does not define a __cmp__ method it should not define a __hash__ method either; if it defines __cmp__ but not __hash__ its instances will not be usable as dictionary keys. If a class defines mutable objects and implements a __cmp__ method it should not implement __hash__ since the dictionary implementation requires that a key's hash value is immutable (if the object's hash value changes, it will be in the wrong hash bucket).<CODE>__nonzero__(self) </CODE>Called to implement truth value testing; should return 0 or 1. When this method is not defined, <CODE>__len__</CODE> is called, if it is defined (see below). If a class defines neither <CODE>__len__</CODE> nor <CODE>__nonzero__</CODE>, all its instances are considered true.
+<BR></DL>
+
+
+<H4><A NAME="HDR2"> 3.3.2  Customizing attribute access</A></H4>
+<P>The following methods can be defined to customize the meaning of attribute access (use of, assignment to, or deletion of x.<I>name</I>) for class instances. For performance reasons, these methods are cached in the class object at class definition time; therefore, they cannot be changed after the class definition is executed.
+
+<DL>
+<DD><CODE>__getattr__(self, name) </CODE>Called when an attribute lookup has not found the attribute in the usual places (i.e. it is not an instance attribute nor is it found in the class tree for self). name is the attribute name. This method should return the (computed) attribute value or raise an AttributeError exception.
+<BR></DL>
+
+
+<UNKNOWN>Note that if the attribute is found through the normal mechanism, <CODE>__getattr__</CODE> is not called. (This is an asymmetry between <CODE>__getattr__</CODE> and <CODE>__setattr__</CODE>.) This is done both for efficiency reasons and because otherwise <CODE>__setattr__</CODE> would have no way to access other attributes of the instance. Note that at least for instance variables, you can fake total control by not inserting any values in the instance attribute dictionary (but instead inserting them in another object).</UNKNOWN>
+
+<DL>
+<DD><CODE>__setattr__(self, name, value) </CODE>Called whenever an attribute assignment is attempted. This is called instead of the normal mechanism (i.e. instead of storing the value in the instance dictionary). name is the attribute name, value is the value to be assigned to it.
+<BR>
+</DL>
+
+
+<UNKNOWN>If __setattr__ wants to assign to an instance attribute, it should <I>not</I> simply execute ``self.<I>name</I> = value''  this would cause a recursive call to itself. Instead, it should insert the value in the dictionary of instance attributes, e.g.``self.__dict__[name]=value''.</UNKNOWN>
+
+<DL>
+<DD><CODE>__delattr__(self, name) </CODE>Like __setattr__ but for attribute deletion instead of assignment.
+<BR></DL>
+
+
+<H4><A NAME="HDR3"> 3.3.3  Emulating callable objects</A></H4>
+
+<DL>
+<DD><CODE>__call__(self, [args...]) </CODE>Called when the instance is "called" as a function; if this method is defined, x(arg1, arg2, ...) is a shorthand for x.__call__(arg1, arg2, ...).
+<BR></DL>
+
+
+<H4><A NAME="HDR4"> 3.3.4  Emulating sequence and mapping types</A></H4>
+<P>The following methods can be defined to emulate sequence or mapping objects. The first set of methods is used either to emulate a sequence or to emulate a mapping; the difference is that for a sequence, the allowable keys should be the integers <I>k</I> for which 0 &lt;= <I>k</I> &lt; <I>N</I> where <I>N</I> is the length of the sequence, and the method __getslice__ (see below) should be defined. It is also recommended that mappings provide methods keys, values and items behaving similar to those for Python's standard dictionary objects; mutable sequences should provide methods append, count, index, insert, sort, remove and reverse like Python standard list objects. Finally, sequence types should implement addition (meaning concatenation) and multiplication (meaning repetition) by defining the methods __add__, __radd__, __mul__ and __rmul__ described below; they should not define __coerce__ or other numerical operators.
+
+<DL>
+<DD><CODE>__len__(self) </CODE>Called to implement the built-in function <CODE>len()</CODE>. Should return the length of the object, an integer <CODE>&gt;=</CODE> 0. Also, an object that doesn't define a __nonzero__() method and whose <CODE>__len__()</CODE> method returns zero is considered to be false in a Boolean context. 
+<BR>
+<DD><CODE>__getitem__(self, key) </CODE>Called to implement evaluation of <CODE>self[key]</CODE>. Note that the special interpretation of negative keys (if the class wishes to emulate a sequence type) is up to the <CODE>__getitem__</CODE> method.
+<BR>
+<DD><CODE>__setitem__(self, key, value) </CODE>Called to implement assignment to <CODE>self[key]</CODE>. Same note as for <CODE>__getitem__</CODE>.
+<BR>
+<DD><CODE>__delitem__(self, key) </CODE>Called to implement deletion of <CODE>self[key]</CODE>. Same note as for <CODE>__getitem__</CODE>.
+<BR></DL>
+
+
+<H5><A NAME="HDR5"> 3.3.4.1  Additional methods for emulation of sequence types</A></H5>
+<P>The following methods can be defined to further emulate sequence objects. For immutable sequences methods, only __getslice__ should be defined; for mutable sequences, all three methods should be defined.
+
+<DL>
+<DD><CODE>__getslice__(self, i, j) </CODE>Called to implement evaluation of <CODE>self[i:j]</CODE>. The returned object should be of the same type as self. Note that missing <CODE>i</CODE> or <CODE>j</CODE> in the slice expression are replaced by 0 or <CODE>len(self)</CODE>, respectively, and <CODE>len(self)</CODE> has been added (once) to originally negative <CODE>i</CODE> or <CODE>j</CODE> by the time this function is called (unlike for <CODE>__getitem__</CODE>).
+<BR>
+<DD><CODE>__setslice__(self, i, j, sequence) </CODE>Called to implement assignment to <CODE>self[i:j]</CODE>. The sequence argument can have any type. The return value should be None. Same notes for i and j as for <CODE>__getslice__</CODE>.
+<BR>
+
+<DD><CODE>__delslice__(self, i, j) </CODE>Called to implement deletion of <CODE>self[i:j]</CODE>. Same notes for i and j as for <CODE>__getslice__</CODE>.
+<BR></DL>
+
+
+<P>Notice that these methods are only invoked when a single slice with a single colon is used. For slice operations involving <I>extended slice notation</I>, __getitem__, __setitem__ or __delitem__ is called.
+<H4><A NAME="HDR6"> 3.3.5  Emulating numeric types</A></H4>
+<P>The following methods can be defined to emulate numeric objects. Methods corresponding to operations that are not supported by the particular kind of number implemented (e.g., bitwise operations for non-integral numbers) should be left undefined.
+
+<DL>
+<DD><CODE>__add__(self, right)</CODE>
+<BR></DL>
+
+
+<UNKNOWN><CODE>__sub__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__mul__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__div__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__mod__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__divmod__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__pow__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__lshift__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rshift__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__and__(self, right)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__xor__(self, right)</CODE></UNKNOWN>
+<UNKNOWN>__or__(self, right)These functions are called to implement the binary arithmetic operations (+, -, *, /, %, divmod(), pow(), &lt;&lt;, &gt;&gt;, &amp;, ^, |). For instance: to evaluate the expression x+y, where x is an instance of a class that has an __add__ method, x.__add__(y) is called.</UNKNOWN>
+
+<DL>
+<DD><CODE>__radd__(self, left)</CODE>
+<BR></DL>
+
+
+<UNKNOWN><CODE>__rsub__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rmul__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rdiv__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rmod__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rdivmod__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rpow__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rlshift__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rrshift__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rand__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__rxor__(self, left)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__ror__(self, left) </CODE> These functions are called to implement the binary arithmetic operations (<CODE>+</CODE>, <CODE>-</CODE>, <CODE>*</CODE>, <CODE>/</CODE>, <CODE>%</CODE>, <CODE>divmod()</CODE>, <CODE>pow()</CODE>, <CODE>&lt;&lt;</CODE>, <CODE>&gt;&gt;</CODE>, <CODE>&amp;</CODE>, <CODE>^</CODE>, <CODE>|</CODE>) with reversed operands. These functions are only called if the left operand does not support the corresponding operation (possibly after coercion). For instance: to evaluate the expression x+y, where x is an instance of a class that does not have an __add__ method, y.__radd(x) is called. If the class defines a __coerce__ method that coerces its arguments to a common type, these methods will never be called and thus needn't be defined. They are useful for classes that implement semi-numerical data types (types that have some numerical behavior but don't adhere to all invariants usually assumed about numbers).</UNKNOWN>
+
+<DL>
+<DD><CODE>__neg__(self)</CODE>
+<BR></DL>
+
+
+<UNKNOWN><CODE>__pos__(self)</CODE></UNKNOWN>
+
+<UNKNOWN><CODE>__abs__(self)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__invert__(self) </CODE> Called to implement the unary arithmetic operations (<CODE>-</CODE>, <CODE>+</CODE>, <CODE>abs()</CODE> and <CODE>~</CODE>).</UNKNOWN>
+
+<DL>
+<DD><CODE>__int__(self)</CODE>
+<BR></DL>
+
+
+<UNKNOWN><CODE>__long__(self)</CODE></UNKNOWN>
+<UNKNOWN><CODE>__float__(self) </CODE> Called to implement the built-in functions <CODE>int()</CODE>, <CODE>long()</CODE> and <CODE>float()</CODE>. Should return a value of the appropriate type.</UNKNOWN>
+
+<DL>
+<DD><CODE>__oct__(self)</CODE>
+<BR></DL>
+
+
+<UNKNOWN><CODE>__hex__(self) </CODE> Called to implement the built-in functions <CODE>oct()</CODE> and <CODE>hex()</CODE>. Should return a string value.</UNKNOWN>
+
+<DL>
+<DD><CODE>__coerce__(self, other) </CODE>Called to implement "mixed-mode" numeric arithmetic. Should either return a 2-tuple containing self and other converted to a common numeric type, or None if no conversion is possible. When the common type would be the type of other, it is sufficient to return None, since the interpreter will also ask the other object to attempt a coercion (but sometimes, if the implementation of the other type cannot be changed, it is useful to do the conversion to the other type here).
+<BR></DL>
+
+
+<UNKNOWN><B>Coercion rules</B>: to evaluate x <I>op</I> y, the following steps are taken (where __op__ and __rop__ are the method names corresponding to <I>op</I>, e.g. if <I>op</I> is `+', __add__ and __radd__ are used). If an exception occurs at any point, the evaluation is abandoned and exception handling takes over.</UNKNOWN>
+<UNKNOWN>0.If x is a string object and <I>op</I> is the modulo operator (%), the string formatting operation (see [Ref:XXX]) is invoked and the remaining steps are skipped.</UNKNOWN>
+<UNKNOWN>1.If x is a class instance:</UNKNOWN>
+<UNKNOWN>1a.If x has a __coerce__ method: replace x and y with the 2-tuple returned by x.__coerce__(y); skip to step 2 if the coercion returns None.</UNKNOWN>
+<UNKNOWN>1b.If neither x nor y is a class instance after coercion, go to step 3.</UNKNOWN>
+<UNKNOWN>1c.If x has a method __op__, return x.__op__(y); otherwise, restore x and y to their value before step 1a.</UNKNOWN>
+<UNKNOWN>2.If y is a class instance:</UNKNOWN>
+<UNKNOWN>2a.If y has a __coerce__ method: replace y and x with the 2-tuple returned by y.__coerce__(x); skip to step 3 if the coercion returns None.</UNKNOWN>
+<UNKNOWN>2b.If neither x nor y is a class instance after coercion, go to step 3.</UNKNOWN>
+<UNKNOWN>2b.If y has a method __rop__, return y.__rop__(x); otherwise, restore x and y to their value before step 2a.</UNKNOWN>
+<UNKNOWN>3.We only get here if neither x nor y is a class instance.</UNKNOWN>
+<UNKNOWN>3a.If <I>op</I> is `+' and x is a sequence, sequence concatenation is invoked.</UNKNOWN>
+<UNKNOWN>3b.If <I>op</I> is `*' and one operand is a sequence and the other an integer, sequence repetition is invoked.</UNKNOWN>
+<UNKNOWN>3c.Otherwise, both operands must be numbers; they are coerced to a common type if possible, and the numeric operation is invoked for that type.</UNKNOWN>
+
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref4.html"><IMG SRC="fm2html-next.gif">Next Chapter</A>

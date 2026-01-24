@@ -1,0 +1,179 @@
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref5.html"><IMG SRC="fm2html-previous.gif">Previous Chapter</A>
+<!-- This file was created with the fm2html filter.
+The filter is copyright Norwegian Telecom Research and
+was programmed by Jon Stephenson von Tetzchner. -->
+
+
+<H2><A NAME="HDR0"> Chapter 6:  Simple statements</A></H2>
+<P>Simple statements are comprised within a single logical line. Several simple statements may occur on a single line separated by semicolons. The syntax for simple statements is:
+<PRE>
+simple_stmt:    expression_stmt 
+              | assignment_stmt 
+              | pass_stmt 
+              | del_stmt 
+              | print_stmt 
+              | return_stmt 
+              | raise_stmt 
+              | break_stmt 
+              | continue_stmt 
+              | import_stmt 
+              | global_stmt 
+              | exec_stmt 
+</PRE>
+<H3><A NAME="HDR1"> 6.1  Expression statements</A></H3>
+<P>Expression statements are used (mostly interactively) to compute and write a value, or (usually) to call a procedure (a function that returns no meaningful result; in Python, procedures return the value <CODE>None</CODE>). Other uses of expression statements are allowed and occasionally useful. The syntax for an expression statement is:
+<PRE>
+expression_stmt: expression_list 
+</PRE>
+<P>An expression statement evaluates the expression list (which may be a single expression). In interactive mode, if the value is not <CODE>None</CODE>, it is converted to a string using the built-in repr() function and the resulting string is written to standard output (see <A HREF="ref6.html#REF25905">"The print statement" on page41</A>) on a line by itself. (Expression statements yielding None are not written, so that procedure calls do not cause any output.)
+<H3><A NAME="HDR2"> 6.2  Assignment statements</A></H3>
+<P>Assignment statements are used to (re)bind names to values and to modify attributes or items of mutable objects:
+<PRE>
+assignment_stmt: (target_list "=")+ expression_list 
+target_list:     target ("," target)* [","] 
+target:          identifier | "(" target_list ")" | "[" target_list "]" 
+               | attributeref | subscription | slicing 
+</PRE>
+<P>(See <A HREF="ref5.html#REF30293">"Primaries" on page29</A> for the syntax definitions for the last three symbols.) 
+<P>An assignment statement evaluates the expression list (remember that this can be a single expression or a comma-separated list, the latter yielding a tuple) and assigns the single resulting object to each of the target lists, from left to right.
+
+<P>Assignment is defined recursively depending on the form of the target (list). When a target is part of a mutable object (an attribute reference, subscription or slicing), the mutable object must ultimately perform the assignment and decide about its validity, and may raise an exception if the assignment is unacceptable. The rules observed by various types and the exceptions raised are given with the definition of the object types (<A HREF="ref3.html#REF22319">See "The standard type hierarchy" on page12.</A>) 
+<P>Assignment of an object to a target list is recursively defined as follows.
+
+<UL>
+<P><LI>If the target list is a single target: the object is assigned to that target.
+<BR>
+<P><LI>If the target list is a comma-separated list of targets: the object must be a tuple with the same number of items as there are targets in the target list, and the items are assigned, from left to right, to the corresponding targets.
+<BR></UL>
+
+
+<P>Assignment of an object to a single target is recursively defined as follows.
+
+<UL>
+<P><LI>If the target is an identifier (name):
+<BR></UL>
+
+
+<UNKNOWN> ·  If the name does not occur in a <CODE>global</CODE> statement in the current code block: the name is bound to the object in the current local name space.</UNKNOWN>
+<UNKNOWN> ·  Otherwise: the name is bound to the object in the current global name space.</UNKNOWN>
+
+<UL>
+<P><LI>The name is rebound if it was already bound. This can cause the reference count for the object previously bound to the name to reach zero, causing the object to be deallocated and its 
+<BR>
+<P><LI>If the target is a target list enclosed in parentheses: the object is assigned to that target list as described above.
+<BR>
+<P><LI>If the target is a target list enclosed in square brackets: the object must be a list with the same number of items as the target list contains targets, and its items are assigned, from left to right, to the corresponding targets.
+<BR>
+<P><LI>If the target is an attribute reference: The primary expression in the reference is evaluated. It should yield an object with assignable attributes; if this is not the case, <CODE>TypeError</CODE> is raised. That object is then asked to assign the assigned object to the given attribute; if it cannot perform the assignment, it raises an exception (usually but not necessarily <CODE>AttributeError</CODE>).
+<BR>
+<P><LI>If the target is a subscription: The primary expression in the reference is evaluated. It should yield either a mutable sequence (list) object or a mapping (dictionary) object. Next, the subscript expression is evaluated.
+<BR>
+<P><LI>If the primary is a mutable sequence object (a list), the subscript must yield a plain integer. If it is negative, the sequence's length is added to it. The resulting value must be a nonnegative integer less than the sequence's length, and the sequence is asked to assign the assigned object to its item with that index. If the index is out of range, <CODE>IndexError</CODE> is raised (assignment to a subscripted sequence cannot add new items to a list).
+<BR>
+<P><LI>If the primary is a mapping (dictionary) object, the subscript must have a type compatible with the mapping's key type, and the mapping is then asked to create a key/datum pair which maps the subscript to the assigned object. This can either replace an existing key/value pair with the same key value, or insert a new key/value pair (if no key with the same value existed).
+<BR>
+
+<P><LI>If the target is a slicing: The primary expression in the reference is evaluated. It should yield a mutable sequence object (e.g. a list). The assigned object should be a sequence object of the same type. Next, the lower and upper bound expressions are evaluated, insofar they are present; defaults are zero and the sequence's length. The bounds should evaluate to (small) integers. If either bound is negative, the sequence's length is added to it. The resulting bounds are clipped to lie between zero and the sequence's length, inclusive. Finally, the sequence object is asked to replace the slice with the items of the assigned sequence. The length of the slice may be different from the length of the assigned sequence, thus changing the length of the target sequence, if the object allows it.
+<BR></UL>
+
+
+<P>(In the current implementation, the syntax for targets is taken to be the same as for expressions, and invalid syntax is rejected during the code generation phase, causing less detailed error messages.) 
+<P>WARNING: Although the definition of assignment implies that overlaps between the left-hand side and the right-hand side are `safe' (e.g. ``<CODE>a,</CODE> <CODE>b</CODE> <CODE>=</CODE> <CODE>b,</CODE> <CODE>a</CODE>'' swaps two variables), overlaps <I>within</I> the collection of assigned-to variables are not safe! For instance, the following program prints ``[0,2]'':
+<PRE>
+x = [0, 1] 
+i = 0 
+i, x[i] = 1, 2 
+print x 
+</PRE>
+<H3><A NAME="HDR3"> 6.3  The <CODE>pass</CODE> statement</A></H3>
+<PRE>
+pass_stmt:      "pass" 
+</PRE>
+<P>pass is a null operation  when it is executed, nothing happens. It is useful as a placeholder when a statement is required syntactically, but no code needs to be executed, for example: 
+<PRE>
+def f(arg): pass    # a function that does nothing (yet) 
+class C: pass       # a class with no methods (yet) 
+</PRE>
+<H3><A NAME="HDR4"> 6.4  The <CODE>del</CODE> statement</A></H3>
+<PRE>
+del_stmt:       "del" target_list 
+</PRE>
+<P>Deletion is recursively defined very similar to the way assignment is defined. Rather that spelling it out in full details, here are some hints.
+<P>Deletion of a target list recursively deletes each target, from left to right. 
+<P>Deletion of a name removes the binding of that name (which must exist) from the local or global name space, depending on whether the name occurs in a <CODE>global</CODE> statement in the same code block.
+<P>Deletion of attribute references, subscriptions and slicings is passed to the primary object involved; deletion of a slicing is in general equivalent to assignment of an empty slice of the right type (but even this is determined by the sliced object).
+<H3><A NAME="REF25905"> 6.5  The <CODE>print</CODE> statement</A></H3>
+<PRE>
+print_stmt:     "print" [ expression ("," expression)* [","] ] 
+</PRE>
+
+<P>print evaluates each expression in turn and writes the resulting object to standard output (see below). If an object is not a string, it is first converted to a string using the rules for string conversions. The (resulting or original) string is then written. A space is written before each object is (converted and) written, unless the output system believes it is positioned at the beginning of a line. This is the case: (1) when no characters have yet been written to standard output; or (2) when the last character written to standard output is <CODE>\n</CODE>; or (3) when the last write operation on standard output was not a <CODE>print</CODE> statement. (In some cases it may be functional to write an empty string to standard output for this reason.)
+<P>A <CODE>"\n"</CODE> character is written at the end, unless the <CODE>print</CODE> statement ends with a comma. This is the only action if the statement contains just the keyword <CODE>print</CODE>. Standard output is defined as the file object named <CODE>stdout </CODE>in the built-in module <CODE>sys</CODE>. If no such object exists, or if it is not a writable file, a <CODE>RuntimeError</CODE> exception is raised. (The original implementation attempts to write to the system's original standard output instead, but this is not safe, and should be fixed.)
+<H3><A NAME="HDR5"> 6.6  The <CODE>return</CODE> statement</A></H3>
+<PRE>
+return_stmt:    "return" [expression_list] 
+</PRE>
+<P>return may only occur syntactically nested in a function definition, not within a nested class definition.
+<P>If an expression list is present, it is evaluated, else <CODE>None </CODE>is substituted. 
+<P><CODE>return</CODE> leaves the current function call with the expression list (or <CODE>None</CODE>) as return value. 
+<P>When <CODE>return</CODE> passes control out of a <CODE>try</CODE> statement with a <CODE>finally</CODE> clause, that finally clause is executed before really leaving the function.
+<H3><A NAME="HDR6"> 6.7  The <CODE>raise</CODE> statement</A></H3>
+<PRE>
+raise_stmt:     "raise" expression ["," expression ["," expression]] 
+</PRE>
+<P>raise evaluates its first expression, which must yield a string, class, or instance object. If there is a second expression, this is evaluated, else <CODE>None</CODE> is substituted. If the first expression is a class object, then the second expression must be an instance of that class or one of its derivatives. If the first expression is an instance object, the second expression must be <CODE>None</CODE>. 
+<P>If the first object is a class or string, it then raises the exception identified by the first object, with the second one (or <CODE>None</CODE>) as its parameter. If the first object is an instance, it raises the exception identified by the class of the object, with the instance as its parameter (and there should be no second object, or the second object should be <CODE>None</CODE>). 
+<P>If a third object is present, and it is not <CODE>None</CODE>, it should be a traceback object (see  <A HREF="ref3.html#REF27144">page17</A> traceback objects), and it is substituted instead of the current location as the place where the exception occurred. This is useful to re-raise an exception transparently in an except clause.
+<H3><A NAME="HDR7"> 6.8  The <CODE>break</CODE> statement</A></H3>
+<PRE>
+break_stmt:     "break" 
+</PRE>
+<P>break may only occur syntactically nested in a <CODE>for </CODE>or <CODE>while</CODE> loop, but not nested in a function or class definition within that loop.
+<P>It terminates the nearest enclosing loop, skipping the optional <CODE>else</CODE> clause if the loop has one. 
+<P>If a <CODE>for</CODE> loop is terminated by <CODE>break</CODE>, the loop control target keeps its current value.
+
+<P>When <CODE>break</CODE> passes control out of a <CODE>try</CODE> statement with a <CODE>finally</CODE> clause, that finally clause is executed before really leaving the loop.
+<H3><A NAME="HDR8"> 6.9  The <CODE>continue</CODE> statement</A></H3>
+<PRE>
+continue_stmt:  "continue" 
+</PRE>
+<P>continue may only occur syntactically nested in a <CODE>for</CODE> or <CODE>while</CODE> loop, but not nested in a function or class definition or <CODE>try</CODE> statement within that loop.<A HREF="ref6.html#FN1">(1)</A> It continues with the next cycle of the nearest enclosing loop.
+<H3><A NAME="REF17806"> 6.10  The <CODE>import</CODE> statement</A></H3>
+<PRE>
+import_stmt:    "import" identifier ("," identifier)* 
+              | "from" identifier "import" identifier ("," identifier)* 
+            | "from" identifier "import" "*" 
+</PRE>
+<P>Import statements are executed in two steps: (1) find a module, and initialize it if necessary; (2) define a name or names in the local name space (of the scope where the <CODE>import</CODE> statement occurs). The first form (without <CODE>from</CODE>) repeats these steps for each identifier in the list, the <CODE>from</CODE> form performs them once, with the first identifier specifying the module name.
+<P>The system maintains a table of modules that have been initialized, indexed by module name. (The current implementation makes this table accessible as <CODE>sys.modules</CODE>.) When a module name is found in this table, step (1) is finished. If not, a search for a module definition is started. This first looks for a built-in module definition, and if no built-in module if the given name is found, it searches a user-specified list of directories for a file whose name is the module name with extension <CODE>".py"</CODE>. (The current implementation uses the list of strings <CODE>sys.path</CODE> as the search path; it is initialized from the shell environment variable <CODE>$PYTHONPATH</CODE>, with an installation-dependent default.) 
+<P>If a built-in module is found, its built-in initialization code is executed and step (1) is finished. If no matching file is found, <CODE>ImportError</CODE> is raised. If a file is found, it is parsed, yielding an executable code block. If a syntax error occurs, <CODE>SyntaxError</CODE> is raised. Otherwise, an empty module of the given name is created and inserted in the module table, and then the code block is executed in the context of this module. Exceptions during this execution terminate step (1).
+<P>When step (1) finishes without raising an exception, step (2) can begin.
+<P>The first form of <CODE>import</CODE> statement binds the module name in the local name space to the module object, and then goes on to import the next identifier, if any. The <CODE>from</CODE> form does not bind the module name: it goes through the list of identifiers, looks each one of them up in the module found in step (1), and binds the name in the local name space to the object thus found. If a name is not found, <CODE>ImportError</CODE> is raised. If the list of identifiers is replaced by a star (<CODE>*</CODE>), all names defined in the module are bound, except those beginning with an underscore(<CODE>_</CODE>).
+<P>Names bound by import statements may not occur in <CODE>global</CODE> statements in the same scope.
+<P>The <CODE>from</CODE> form with <CODE>*</CODE> may only occur in a module scope.
+
+<P>(The current implementation does not enforce the latter two restrictions, but programs should not abuse this freedom, as future implementations may enforce them or silently change the meaning of the program.)
+<H3><A NAME="HDR9"> 6.11  The <CODE>global</CODE> statement</A></H3>
+<PRE>
+global_stmt:    "global" identifier ("," identifier)* 
+</PRE>
+<P>The <CODE>global</CODE> statement is a declaration which holds for the entire current code block. It means that the listed identifiers are to be interpreted as globals. While <I>using</I> global names is automatic if they are not defined in the local scope, <I>assigning</I> to global names would be impossible without <CODE>global</CODE>. 
+<P>Names listed in a <CODE>global</CODE> statement must not be used in the same code block before that <CODE>global</CODE> statement is executed. 
+<P>Names listed in a <CODE>global</CODE> statement must not be defined as formal parameters or in a <CODE>for</CODE> loop control target, <CODE>class </CODE>definition, function definition, or <CODE>import</CODE> statement. 
+<P>(The current implementation does not enforce the latter two restrictions, but programs should not abuse this freedom, as future implementations may enforce them or silently change the meaning of the program.) 
+<P>Note: the <CODE>global</CODE> is a directive to the parser. Therefore, it applies only to code parsed at the same time as the <CODE>global </CODE>statement. In particular, a <CODE>global</CODE> statement contained in an <CODE>exec</CODE> statement does not affect the code block <I>containing </I>the <CODE>exec</CODE> statement, and code contained in an <CODE>exec </CODE>statement is unaffected by <CODE>global</CODE> statements in the code containing the <CODE>exec</CODE> statement. The same applies to the <CODE>eval()</CODE>, <CODE>execfile()</CODE> and <CODE>compile()</CODE> functions.
+<H3><A NAME="HDR10"> 6.12  The <CODE>exec</CODE> statement</A></H3>
+<PRE>
+exec_stmt:    "exec" expression ["in" expression ["," expression]] 
+</PRE>
+<P>This statement supports dynamic execution of Python code. The first expression should evaluate to either a string, an open file object, or a code object. If it is a string, the string is parsed as a suite of Python statements which is then executed (unless a syntax error occurs). If it is an open file, the file is parsed until EOF and executed. If it is a code object, it is simply executed. 
+<P>In all cases, if the optional parts are omitted, the code is executed in the current scope. If only the first expression after <CODE>in</CODE> is specified, it should be a dictionary, which will be used for both the global and the local variables. If two expressions are given, both must be dictionaries and they are used for the global and local variables, respectively. 
+<P>Hints: dynamic evaluation of expressions is supported by the built-in function <CODE>eval()</CODE>. The built-in functions <CODE>globals()</CODE> and <CODE>locals()</CODE> return the current global and local dictionary, respectively, which may be useful to pass around for use by <CODE>exec</CODE>. 
+
+<HR><H3>Footnotes</H3>
+<DL COMPACT>
+<DT><A NAME=FN1>(1)</A><DD>Except that it may currently occur within an except clause.
+</DL>
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref7.html"><IMG SRC="fm2html-next.gif">Next Chapter</A>
