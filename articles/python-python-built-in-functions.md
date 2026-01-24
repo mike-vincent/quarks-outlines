@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/y26job.png'
 published: true
 id: 3116477
+date: '2026-01-24T12:12:12Z'
 ---
 
 # Quark’s Outlines: Python Built-in Functions  
