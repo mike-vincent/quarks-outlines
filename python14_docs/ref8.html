@@ -1,0 +1,50 @@
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref7.html"><IMG SRC="fm2html-previous.gif">Previous Chapter</A>
+<!-- This file was created with the fm2html filter.
+The filter is copyright Norwegian Telecom Research and
+was programmed by Jon Stephenson von Tetzchner. -->
+
+
+<H2><A NAME="HDR0"> Chapter 8:  Top-level components</A></H2>
+<P>The Python interpreter can get its input from a number of sources: from a script passed to it as standard input or as program argument, typed in interactively, from a module source file, etc. This chapter gives the syntax used in these cases.
+<H3><A NAME="HDR1"> 8.1  Complete Python programs</A></H3>
+<P>While a language specification need not prescribe how the language interpreter is invoked, it is useful to have a notion of a complete Python program. A complete Python program is executed in a minimally initialized environment: all built-in and standard modules are available, but none have been initialized, except for <CODE>sys</CODE> (various system services), <CODE>__builtin__</CODE> (built-in functions, exceptions and <CODE>None</CODE>) and <CODE>__main__</CODE>. The latter is used to provide the local and global name space for execution of the complete program.
+<P>The syntax for a complete Python program is that for file input, described in the next section. 
+<P>The interpreter may also be invoked in interactive mode; in this case, it does not read and execute a complete program but reads and executes one statement (possibly compound) at a time. The initial environment is identical to that of a complete program; each statement is executed in the name space of <CODE>__main__</CODE>.
+<P>Under UNIX , a complete program can be passed to the interpreter in three forms: with the <B>-c</B> <I>string</I> command line option, as a file passed as the first command line argument, or as standard input. If the file or standard input is a tty device, the interpreter enters interactive mode; otherwise, it executes the file as a complete program.
+<H3><A NAME="HDR2"> 8.2  File input</A></H3>
+<P>All input read from non-interactive files has the same form:
+<PRE>
+file_input:     (NEWLINE | statement)* 
+</PRE>
+<P>This syntax is used in the following situations:
+
+<UL>
+<P><LI>when parsing a complete Python program (from a file or from a string);
+<BR>
+<P><LI>when parsing a module;
+<BR>
+<P><LI>when parsing a string passed to the <CODE>exec</CODE> statement;
+<BR></UL>
+
+
+<H3><A NAME="HDR3"> 8.3  Interactive input</A></H3>
+<P>Input in interactive mode is parsed using the following grammar:
+<PRE>
+interactive_input: [stmt_list] NEWLINE | compound_stmt NEWLINE 
+</PRE>
+<P>Note that a (top-level) compound statement must be followed by a blank line in interactive mode; this is needed to help the parser detect the end of the input.
+
+<H3><A NAME="HDR4"> 8.4  Expression input</A></H3>
+<P>There are two forms of expression input. Both ignore leading whitespace. The string argument to <CODE>eval()</CODE> must have the following form:
+<PRE>
+eval_input:     expression_list NEWLINE* 
+</PRE>
+<P>The input line read by <CODE>input()</CODE> must have the following form:
+<PRE>
+input_input:    expression_list NEWLINE 
+</PRE>
+<P>Note: to read `raw' input line without interpretation, you can use the built-in function <CODE>raw_input()</CODE> or the <CODE>readline()</CODE> method of file objects. 
+
+<A NAME="ENDFILE"><PRE> </PRE></A>
+

@@ -1,0 +1,299 @@
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref4.html"><IMG SRC="fm2html-previous.gif">Previous Chapter</A>
+<!-- This file was created with the fm2html filter.
+The filter is copyright Norwegian Telecom Research and
+was programmed by Jon Stephenson von Tetzchner. -->
+
+
+<H2><A NAME="HDR0"> Chapter 5:  Expressions</A></H2>
+<P>This chapter explains the meaning of the elements of expressions in Python.
+<P><B>Syntax notes:</B> in this and the following chapters, extended BNF notation will be used to describe syntax, not lexical analysis. When (one alternative of) a syntax rule has the form
+<PRE>
+name:    othername 
+</PRE>
+<P>and no semantics are given, the semantics of this form of name are the same as for othername.
+<H3><A NAME="HDR1"> 5.1  Arithmetic conversions</A></H3>
+<P>When a description of an arithmetic operator below uses the phrase "the numeric arguments are converted to a common type", the arguments are coerced using the coercion rules listed at the end of <A HREF="ref3.html#REF19057">chapter 3</A>. If both arguments are standard numeric types, the following coercions are applied:
+
+<UL>
+<P><LI>If either argument is a complex number, the other is converted to complex;
+<BR>
+<P><LI>otherwise, if either argument is a floating point number, the other is converted to floating point;
+<BR>
+<P><LI>otherwise, if either argument is a long integer, the other is converted to long integer;
+<BR>
+<P><LI>otherwise, both must be plain integers and no conversion is necessary.
+<BR></UL>
+
+
+<P>Some additional rules apply for certain operators (e.g. a string left argument to the `%' operator). Extensions can define their own coercions.
+<H3><A NAME="HDR2"> 5.2  Atoms</A></H3>
+<P>Atoms are the most basic elements of expressions. The simplest atoms are identifiers or literals. Forms enclosed in reverse quotes or in parentheses, brackets or braces are also categorized syntactically as atoms. The syntax for atoms is:
+<PRE>
+atom:      identifier | literal | enclosure
+enclosure: parenth_form|list_display|dict_display|string_conversion
+</PRE>
+<H4><A NAME="HDR3"> 5.2.1  Identifiers (Names)</A></H4>
+<P>An identifier occurring as an atom is a reference to a local, global or built-in name binding. If a name is assigned to anywhere in a code block (even in unreachable code), and is not mentioned in a global statement in that code block, then it refers to a local name throughout that code block. When it is not assigned to anywhere in the block, or when it is assigned to but also explicitly listed in a global statement, it refers to a global name if one exists, else to a built-in name (and this binding may dynamically change).
+<P>When the name is bound to an object, evaluation of the atom yields that object. When a name is not bound, an attempt to evaluate it raises a NameError exception
+<H4><A NAME="HDR4"> 5.2.2  Literals</A></H4>
+<P>Python supports string literals and various numeric literals:
+<PRE>
+literal:   stringliteral | integer | longinteger | floatnumber | imagnumber
+
+</PRE>
+<P>Evaluation of a literal yields an object of the given type (string, integer, long integer, floating point number, complex number) with the given value. The value may be approximated in the case of floating point and imaginary (complex) literals.  (See <A HREF="ref2.html#REF40553">"Literals" on page6</A> for details.)
+<P>All literals correspond to immutable data types, and hence the object's identity is less important than its value. Multiple evaluations of literals with the same value (either the same occurrence in the program text or a different occurrence) may obtain the same object or a different object with the same value.
+<P>(In the original implementation, all literals in the same code block with the same type and value yield the same object.)
+<H4><A NAME="HDR5"> 5.2.3  Parenthesized forms</A></H4>
+<P>A parenthesized form is an optional expression list enclosed in parentheses:
+<PRE>
+parenth_form:      "(" [expression_list] ")" 
+</PRE>
+<P>A parenthesized expression list yields whatever that expression list yields: if the list contains at least one comma, it yields a tuple; otherwise, it yields the single expression that makes up the expression list.
+<P>An empty pair of parentheses yields an empty tuple object. Since tuples are immutable, the rules for literals apply(i.e., two occurrences of the empty tuple may or may not yield the same object).
+<P>Note that tuples are not formed by the parentheses, but rather by use of the comma operator. The exception is the empty tuple, for which parentheses <I>are</I> required  allowing unparenthesized "nothing" in expressions would cause ambiguities and allow common typos to pass uncaught.
+<H4><A NAME="HDR6"> 5.2.4  List displays</A></H4>
+<P>A list display is a possibly empty series of expressions enclosed in square brackets:
+<PRE>
+list_display:   "[" [expression_list] "]" 
+</PRE>
+<P>A list display yields a new list object. If it has no expression list, the list object has no items. Otherwise, the elements of the expression list are evaluated from left to right and inserted in the list object in that order.
+<H4><A NAME="REF27031"> 5.2.5  Dictionary displays</A></H4>
+<P>A dictionary display is a possibly empty series of key/datum pairs enclosed in curly braces:
+<PRE>
+dict_display:   "{" [key_datum_list] "}" 
+key_datum_list: key_datum ("," key_datum)* [","] 
+key_datum:      expression ":" expression 
+</PRE>
+<P>A dictionary display yields a new dictionary object
+<P>The key/datum pairs are evaluated from left to right to define the entries of the dictionary: each key object is used as a key into the dictionary to store the corresponding datum. 
+
+<P>Restrictions on the types of the key values are listed earlier in <A HREF="ref3.html#REF22319">"The standard type hierarchy" on page12</A> (to summarize, the key type should be hashable, which excludes all mutable objects). Clashes between duplicate keys are not detected; the last datum (textually rightmost in the display) stored for a given key value prevails.
+<H4><A NAME="HDR7"> 5.2.6  String conversions</A></H4>
+<P>A string conversion is an expression list enclosed in reverse (a.k.a. backward) quotes:
+<PRE>
+string_conversion: "`" expression_list "`" 
+</PRE>
+<P>A string conversion evaluates the contained expression list and converts the resulting object into a string according to rules specific to its type. 
+<P>If the object is a string, a number, None, or a tuple, list or dictionary containing only objects whose type is one of these, the resulting string is a valid Python expression which can be passed to the built-in function eval() to yield an expression with the same value (or an approximation, if floating point numbers are involved). 
+<P>(In particular, converting a string adds quotes around it and converts "funny" characters to escape sequences that are safe to print.) 
+<P>It is illegal to attempt to convert recursive objects (e.g. lists or dictionaries that contain a reference to themselves, directly or indirectly.)
+<P>The built-in function repr() performs exactly the same conversion in its argument as enclosing it in parentheses and reverse quotes does. The built-in function str() performs a similar but more user-friendly conversion.
+<H3><A NAME="REF30293"> 5.3  Primaries</A></H3>
+<P>Primaries represent the most tightly bound operations of the language. Their syntax is:
+<PRE>
+primary:        atom | attributeref | subscription | slicing | call 
+</PRE>
+<H4><A NAME="HDR8"> 5.3.1  Attribute references</A></H4>
+<P>An attribute reference is a primary followed by a period and a name:
+<PRE>
+attributeref:   primary "." identifier 
+</PRE>
+<P>The primary must evaluate to an object of a type that supports attribute references. This object is then asked to produce the attribute whose name is the identifier. If this attribute is not available, the exception AttributeError is raised. Otherwise, the type and value of the object produced is determined by the object. Multiple evaluations of the same attribute reference may yield different objects.
+<H4><A NAME="HDR9"> 5.3.2  Subscriptions</A></H4>
+<P>A subscription selects an item of a sequence (string, tuple or list) or mapping (dictionary) object:
+<PRE>
+subscription:   primary "[" expression_list "]" 
+</PRE>
+<P>The primary must evaluate to an object of a sequence or mapping type. 
+
+<P>If the primary is a mapping, the expression list must evaluate to an object whose value is one of the keys of the mapping, and the subscription selects the value in the mapping that corresponds to that key. 
+<P>If the primary is a sequence, the expression (list) must evaluate to a plain integer. If this value is negative, the length of the sequence is added to it (so that, e.g. x[-1] selects the last item of x.) The resulting value must be a nonnegative integer less than the number of items in the sequence, and the subscription selects the item whose index is that value (counting from zero). 
+<P>A string's items are characters. A character is not a separate data type but a string of exactly one character.
+<H4><A NAME="HDR10"> 5.3.3  Slicings</A></H4>
+<P>A slicing selects a range of items in a sequence (string, tuple or list) object. Slicings may be used as expressions or as targets in assignment or del statements.  The syntax for a slicing:
+<PRE>
+slicing:          simple_slicing | extended_slicing
+simple_slicing:   primary "[" short_slice "]"
+extended_slicing: primary "[" slice_list "]" 
+slice_list:       slice_item ("," slice_item)* [","]
+slice_item:       expression | proper_slice | ellipses
+proper_slice:     short_slice | long_slice
+short_slice:      [lower_bound] ":" [upper_bound]
+long_slice:       short_slice ":" [stride]
+lower_bound:      expression
+upper_bound:      expression
+stride:           expression
+ellipses:         "..."
+</PRE>
+<P>There's an ambiguity in the formal syntax here: anything that looks like an expression list also looks like a slice list, so any subscription can be interpreted as a slicing. Rather than further complicating the syntax, this is disambiguated by declaring that in this case the interpretation as a subscription takes priority over the interpretation as a slicing (this is the case if the slice list contains no proper slice nor ellipses). Similarly, when the slice list has exactly one short slice and no trailing comma, the interpretation as a simple slicing takes priority over that as an extended slicing.
+<P>The semantics for a simple slicing are as follows. The primary must evaluate to a sequence object. The lower and upper bound expressions, if present, must evaluate to plain integers; defaults are zero and the sequence's length, respectively. If either bound is negative, the sequence's length is added to it. The slicing now selects all items with index <I>k</I> such that <I>i</I> &lt;= <I>k</I> &lt; <I>j</I> where <I>i</I> and <I>j</I> are the specified lower and upper bounds. This may be an empty sequence. It is not an error if <I>i</I> or <I>j</I> lie outside the range of valid indexes (such items don't exist so they aren't selected).
+<P>The semantics for an extended slicing are as follows. The primary must evaluate to a mapping object, and it is indexed with a key that is constructed from the slice list, as follows. If the slice list contains at least one comma, the key is a tuple containing the conversion of the slice items; otherwise, the conversion of the lone slice item is the key. The conversion of a slice item that is an expression is that expression. The conversion of an ellipses slice item is the built-in Ellipses object. The conversion of a proper slice is a slice object (see <A HREF="ref3.html#REF18920">page17</A>) whose start, stop and step attributes are the values of the expressions given as lower bound, upper bound and stride, respectively, substituting None for missing expressions.
+
+<H4><A NAME="REF41934"> 5.3.4  Calls</A></H4>
+<P>A call calls a callable object (e.g. a function) with a possibly empty series of arguments:
+<PRE>
+call:                 primary "(" [argument_list [","]] ")" 
+argument_list:        positional_arguments ["," keyword_arguments]
+                    | keyword_arguments
+positional_arguments: expression ("," expression)* 
+keyword_arguments:    keyword_item ("," keyword_item)*
+keyword_item:         identifier "=" expression
+</PRE>
+<P>A trailing comma may be present after an argument list but does not affect the semantics.
+<P>The primary must evaluate to a callable object (user-defined functions, built-in functions, methods of built-in objects, class objects, methods of class instances, and certain class instances themselves are callable; extensions may define additional callable object types).  All argument expressions are evaluated before the call is attempted. Please refer to <A HREF="ref7.html#REF27502">"Function definitions" on page48</A> for the syntax of formal parameter lists.
+<P>If keyword arguments are present, they are first converted to positional arguments, as follows. First, a list of unfilled slots is created for the formal parameters. If there are N positional arguments, they are placed in the first N slots. Next, for each keyword argument, the identifier is used to determine the corresponding slot (if the identifier is the same as the first formal parameter name, the first slot is used, and so on). If the slot is already filled, a TypeError exception is raised. Otherwise, the value of the argument is placed in the slot, filling it (even if the expression is None, it fills the slot). When all arguments have been processed, the slots that are still unfilled are filled with the corresponding default value from the function definition. (Default values are calculated, once, when the function is defined; thus, a mutable object such as a list or dictionary used as default value will be shared by all calls that don't specify an argument value for the corresponding slot; this should usually be avoided.) If there are any unfilled slots for which no default value is specified, a TypeError exception is raised. Otherwise, the list of filled slots is used as the argument list for the call.
+<P>If there are more positional arguments than there are formal parameter slots, a TypeError exception is raised, unless a formal parameter using the syntax``*identifier'' is present; in this case, that formal parameter receives a tuple containing the excess positional arguments (or an empty tuple if there were no excess positional arguments).
+<P>If any keyword argument does not correspond to a formal parameter name, a TypeError exception is raised, unless a formal parameter using the syntax ``**identifier'' is present; in this case, that formal parameter receives a dictionary containing the excess keyword arguments (using the keywords as keys and the argument values as corresponding values), or a (new) empty dictionary if there were no excess keyword arguments.
+<P>Formal parameters using the syntax ``*identifier'' or ``**identifier'' cannot be used as positional argument slots or as keyword argument names. Formal parameters using the syntax ``(sublist)'' cannot be used as keyword argument names; the outermost sublist corresponds to a single unnamed argument slot, and the argument value is assigned to the sublist using the usual tuple assignment rules after all other parameter processing is done.
+<P>A call always returns some value, possibly None, unless it raises an exception. How this value is computed depends on the type of the callable object. 
+
+<P>If it is:
+
+<DL>
+<DD><B>a user-defined function:</B>the code block for the function is executed, passing it the argument list. The first thing the code block will do is bind the formal parameters to the arguments; this is described in section<A HREF="ref7.html#REF27502">"Function definitions" on page48</A>. When the code block executes a return statement, this specifies the return value of the function call.
+<BR>
+<DD><B>a built-in function or method:</B>the result is up to the interpreter; see the library reference manual for the descriptions of built-in functions and methods.
+<BR>
+<DD><B>a class object:</B>a new instance of that class is returned.
+<BR>
+<DD><B>a class instance method:</B>the corresponding user-defined function is called, with an argument list that is one longer than the argument list of the call. The instance becomes the first argument.
+<BR></DL>
+
+
+<H3><A NAME="HDR11"> 5.4  The power operator</A></H3>
+<P>The power operator binds more tightly than unary operators on its left; it binds less tightly than unary operators on its right. The syntax is:
+<PRE>
+power:         primary ["**" u_expr]
+</PRE>
+<P>Thus, in an unparenthesized sequence of power and unary operators, the operators are evaluated from right to left (this does not constrain the evaluation order for the operands).
+<P>The power operator has the same semantics as the built-in pow() function: it yields its left argument raised to the power of its right argument. The numeric arguments are first converted to a common type. The result type is that of the arguments after coercion; if the result is not expressible in that type (as in raising an integer to a negative power, or a negative floating point number to a broken power), a TypeError exception is raised.
+<H3><A NAME="HDR12"> 5.5  Unary arithmetic operations</A></H3>
+<P>All unary arithmetic (and bit-wise) operations have the same priority:
+<PRE>
+u_expr:         power | "-" u_expr | "+" u_expr | "~" u_expr 
+</PRE>
+<P>The unary "-" (minus) operator yields the negation of its numeric argument.
+<P>The unary "+" (plus) operator yields its numeric argument unchanged.
+<P>The unary "~" (invert) operator yields the bit-wise inversion of its plain or long integer argument. The bit-wise inversion of x is defined as -(x+1). It only applies to integral numbers.
+<P>In all three cases, if the argument does not have the proper type, a TypeError exception is raised.
+<H3><A NAME="HDR13"> 5.6  Binary arithmetic operations</A></H3>
+<P>The remaining binary arithmetic operations have the conventional priority levels. Note that some of these operations also apply to certain non-numeric types. Apart from the power operator, there are only two levels, one for multiplicative operators and one for additive operators:
+<PRE>
+m_expr:         u_expr | m_expr "*" u_expr 
+              | m_expr "/" u_expr | m_expr "%" u_expr 
+a_expr:         m_expr | aexpr "+" m_expr | aexpr "-" m_expr 
+
+</PRE>
+<P>The "*" (multiplication) operator yields the product of its arguments. The arguments must either both be numbers, or one argument must be a plain integer and the other must be a sequence. In the former case, the numbers are converted to a common type and then multiplied together. In the latter case, sequence repetition is performed; a negative repetition factor yields an empty sequence.
+<P>The "/" (division) operator yields the quotient of its arguments. The numeric arguments are first converted to a common type. Plain or long integer division yields an integer of the same type; the result is that of mathematical division with the `floor' function applied to the result. Division by zero raises the ZeroDivisionError exception
+<P>The "%" (modulo) operator yields the remainder from the division of the first argument by the second. The numeric arguments are first converted to a common type. A zero right argument raises the ZeroDivisionError exception. The arguments may be floating point numbers, e.g. 3.14%0.7 equals 0.34 (since 3.14 equals 4*0.7+0.34). The modulo operator always yields a result with the same sign as its second operand (or zero); the absolute value of the result is strictly smaller than the second operand.
+<P>The integer division and modulo operators are connected by the following identity: x == (x/y)*y + (x%y). Integer division and modulo are also connected with the built-in function divmod(): divmod(x, y) == (x/y, x%y). These identities don't hold for floating point and complex numbers; there a similar identity holds where x/y is replaced by floor(x/y)) orfloor((x/y).real), respectively.
+<P>The "+" (addition) operator yields the sum of its arguments. The arguments must either both be numbers, or both sequences of the same type. In the former case, the numbers are converted to a common type and then added together. In the latter case, the sequences are concatenated.
+<P>The "-" (subtraction) operator yields the difference of its arguments. The numeric arguments are first converted to a common type.
+<H3><A NAME="HDR14"> 5.7  Shifting operations</A></H3>
+<P>The shifting operations have lower priority than the arithmetic operations:
+<PRE>
+shift_expr:     a_expr | shift_expr ( "&lt;&lt;" | "&gt;&gt;" ) a_expr 
+</PRE>
+<P>These operators accept plain or long integers as arguments. The arguments are converted to a common type. They shift the first argument to the left or right by the number of bits given by the second argument. 
+<P>A right shift by <I>n</I> bits is defined as division by pow(2,n). A left shift by <I>n</I> bits is defined as multiplication with pow(2,n); for plain integers there is no overflow check so this drops bits and flips the sign if the result is not less than pow(2,31) in absolute value. Negative shift counts raise a ValueError exception.
+<H3><A NAME="HDR15"> 5.8  Binary bit-wise operations</A></H3>
+<P>Each of the three bitwise operations has a different priority level:
+<PRE>
+and_expr:       shift_expr | and_expr "&amp;" shift_expr 
+xor_expr:       and_expr | xor_expr "^" and_expr 
+or_expr:       xor_expr | or_expr "|" xor_expr 
+
+</PRE>
+<P>The "&amp;" operator yields the bit-wise AND of its arguments, which must be plain or long integers. The arguments are converted to a common type.
+<P>The "^" operator yields the bitwise XOR (exclusive OR) of its arguments, which must be plain or long integers. The arguments are converted to a common type. 
+<P>The "|" operator yields the bitwise (inclusive) OR of its arguments, which must be plain or long integers. The arguments are converted to a common type.
+<H3><A NAME="HDR16"> 5.9  Comparisons</A></H3>
+<P>Contrary to C, all comparison operations in Python have the same priority, which is lower than that of any arithmetic, shifting or bitwise operation. Also contrary to C, expressions like a &lt; b &lt; c have the interpretation that is conventional in mathematics:
+<PRE>
+comparison:     or_expr (comp_operator or_expr)* 
+comp_operator:  "&lt;"|"&gt;"|"=="|"&gt;="|"&lt;="|"&lt;&gt;"|"!="|"is" ["not"]|["not"] "in" 
+</PRE>
+<P>Comparisons yield integer values: 1 for true, 0 for false. 
+<P>Comparisons can be chained arbitrarily, e.g. x &lt; y &lt;= z is equivalent to x &lt; y and y &lt;= z, except that y is evaluated only once (but in both cases z is not evaluated at all when x &lt; y is found to be false).
+<P>Formally, if <I>a</I>, <I>b</I>, <I>c</I>, ..., <I>y</I>, <I>z</I> are expressions and <I>opa</I>, <I>opb</I>, ..., <I>opy</I> are comparison operators, then <I>a opa b opb c</I> ... <I>y opy z</I> is equivalent to <I>a opa b</I> and <I>b opb c</I> and ...  <I>y opy z</I>, except that each expression is evaluated at most once. 
+<P>Note that <I>a opa b opb c</I> doesn't imply any kind of comparison between <I>a</I> and <I>c</I>, so that e.g. x &lt; y &gt; z is perfectly legal (though perhaps not pretty). 
+<P>The forms &lt;&gt; and != are equivalent; for consistency with C, != is preferred; where != is mentioned below &lt;&gt; is also implied. 
+<P>The operators "&lt;", "&gt;", "==", "&gt;=", "&lt;=", and "!=" compare the values of two objects. The objects needn't have the same type. If both are numbers, they are converted to a common type. Otherwise, objects of different types <I>always</I> compare unequal, and are ordered consistently but arbitrarily. (This unusual definition of comparison is done to simplify the definition of operations like sorting and the in and not in operators.) 
+<P>Comparison of objects of the same type depends on the type:
+
+<UL>
+<P><LI>Numbers are compared arithmetically.
+<BR>
+<P><LI>Strings are compared lexicographically using the numeric equivalents (the result of the built-in function ord) of their characters.
+<BR>
+<P><LI>Tuples and lists are compared lexicographically using comparison of corresponding items.
+<BR>
+<P><LI>Mappings (dictionaries) are compared through lexicographic comparison of their sorted (key, value) lists.<A HREF="ref5.html#FN1">(1)</A> 
+<BR>
+
+<P><LI>Most other types compare unequal unless they are the same object; the choice whether one object is considered smaller or larger than another one is made arbitrarily but consistently within one execution of a program.
+<BR></UL>
+
+
+<P>The operators in and not in test for sequence membership: if <I>y</I> is a sequence, <I>x</I> in <I>y</I> is true if and only if there exists an index <I>i</I> such that <I>x</I> = <I>y</I>[<I>i</I>]. <I>x</I> not in <I>y</I> yields the inverse truth value. The exception TypeError is raised when <I>y</I> is not a sequence, or when <I>y</I> is a string and <I>x</I> is not a string of length one.<A HREF="ref5.html#FN2">(2)</A>
+<P>The operators is and is not test for object identity: <I>x</I> is <I>y</I> is true if and only if <I>x</I> and <I>y</I> are the same object. <I>x</I> is not <I>y</I> yields the inverse truth value.
+<H3><A NAME="REF18638"> 5.10  Boolean operations</A></H3>
+<P>Boolean operations have the lowest priority of all Python operations:
+<PRE>
+expression:      or_test | lambda_form 
+or_test:        and_test | or_test "or" and_test 
+and_test:       not_test | and_test "and" not_test 
+not_test:       comparison | "not" not_test 
+lambda_form:"lambda" [parameter_list]: expression 
+</PRE>
+<P>In the context of Boolean operations, and also when expressions are used by control flow statements, the following values are interpreted as false: None, numeric zero of all types, empty sequences (strings, tuples and lists), and empty mappings (dictionaries). All other values are interpreted as true. 
+<P>The operator not yields 1 if its argument is false, 0 otherwise.
+<P>The expression <I>x</I> and <I>y</I> first evaluates <I>x</I>; if <I>x</I> is false, its value is returned; otherwise, <I>y</I> is evaluated and the resulting value is returned. 
+<P>The expression <I>x</I> or <I>y</I> first evaluates <I>x</I>; if <I>x</I> is true, its value is returned; otherwise, <I>y</I> is evaluated and the resulting value is returned.
+<P>(Note that neither and nor or restrict the value and type they return to 0 and 1, but rather return the last evaluated argument. This is sometimes useful, e.g. if s is a string that should be replaced by a default value if it is empty, the expression s or 'foo' yields the desired value. Because not has to invent a value anyway, it does not bother to return a value of the same type as its argument, so e.g. not 'foo' yields 0, not ''.) 
+<P>Lambda forms (lambda expressions) have the same syntactic position as expressions. They are a shorthand to create anonymous functions; the expression lambda arguments: expression yields a function object that behaves virtually identical to one defined with
+<PRE>
+def name (arguments):
+    return expression
+
+</PRE>
+<P>See <A HREF="ref7.html#REF27502">"Function definitions" on page48</A> for the syntax of parameter lists. Note that functions created with lambda forms cannot contain statements.
+<H3><A NAME="HDR17"> 5.11  Expression lists</A></H3>
+<PRE>
+expression_list:      expression ("," expression)* [","] 
+</PRE>
+<P>An expression list containing at least one comma yields a tuple. The length of the tuple is the number of expressions in the list. The expressions are evaluated from left to right.
+<P>The trailing comma is required only to create a single tuple (a.k.a. a <I>single</I>); it is optional in all other cases. A single expression without a trailing comma doesn't create a tuple, but rather yields the value of that expression. (To create an empty tuple, use an empty pair of parentheses: ().)
+
+<H3><A NAME="HDR18"> 5.12  Summary</A></H3>
+<P>The following table summarizes the operator precedences in Python, from lowest precedence (least binding) to highest precedence (most binding). Operators in the same box have the same precedence. Unless the syntax is explicitly given, operators are binary. Operators in the same box group left to right (except for comparisons, which chain from left to right  see above).
+<P><A HREF="ref5.tbl_1.ps"><IMG SRC="fm2html-table.gif">Table 4: <B>Operator Precedence</B> 
+</A>
+<PRE>
+------------------------------------------------------------
+           <CODE>or</CODE>                         Boolean OR              
+          <CODE>and</CODE>                        Boolean AND              
+         <CODE>not <I>x</I></CODE>                       Boolean NOT              
+       <CODE>in, not in                  Membership tests           
+       is, is not                   Identity tests            
+&lt;, &lt;=, &gt;, &gt;=, &lt;&gt;, !=, =</CODE>               Comparisons              
+           <CODE>|</CODE>                          Bitwise OR              
+           <CODE>^</CODE>                         Bitwise XOR              
+           <CODE>&amp;</CODE>                         Bitwise AND              
+         <CODE>&lt;&lt;, &gt;&gt;</CODE>                         Shifts                
+          <CODE>+, -</CODE>                 Addition and subtraction       
+        <CODE>*, /, %</CODE>          Multiplication, division, remainder   
+         <I>+x, -x                   Positive, negative          
+           ~x</I>                        Bitwise not              
+      <I>x.attribute                Attribute reference          
+        x</I>[<I>index</I>]                     Subscription             
+     <I>x</I>[<I>index:index</I>]                    Slicing                
+   <I>f</I>(<I>arguments</I>, ...)                Function call             
+  (<I>expressions</I> . . .)    Binding or tuple display             
+  [<I>expressions</I> . . .]    List display                         
+   {<I>key:datum</I>, . . .}    Dictionary display                   
+      `<I>expression</I>`       String conversion                    
+------------------------------------------------------------
+</PRE>
+
+
+<HR><H3>Footnotes</H3>
+<DL COMPACT>
+<DT><A NAME=FN1>(1)</A><DD>This is expensive since it requires sorting the keys first, but about the only sensible definition. An earlier version of Python compared dictionaries by identity only, but this caused surprises because people expected to be able to test a dictionary for emptiness by comparing it to {}.
+<DT><A NAME=FN2>(2)</A><DD>The latter restriction is sometimes a nuisance.
+</DL>
+<P><A HREF="ref.book.html"><IMG SRC="fm2html-toc.gif">Table of Contents</A>
+<A HREF="ref6.html"><IMG SRC="fm2html-next.gif">Next Chapter</A>
