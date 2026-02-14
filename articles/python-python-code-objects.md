@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/wgpgi4.png'
 published: true
 id: 3116479
+date: '2026-02-14T12:13:34Z'
 ---
 
 # Quark’s Outlines: Python Code Objects  
