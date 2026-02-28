@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/u3cwcz.png'
 published: true
 id: 3116481
+date: '2026-02-28T12:13:13Z'
 ---
 
 # Quark’s Outlines: Python Customizing Attribute Access  
