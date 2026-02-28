@@ -7,7 +7,7 @@ tags:
   - beginners
   - tutorial
 series: Quark's Outlines
-cover_image: 'https://files.catbox.moe/ikn2vw.png'
+cover_image: 'https://files.catbox.moe/x1vo02.png'
 published: true
 id: 3117331
 date: '2026-01-17T12:11:28Z'
