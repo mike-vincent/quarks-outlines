@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/jryoy9.png'
 published: true
 id: 3116484
+date: '2026-03-07T12:13:38Z'
 ---
 
 # Quark’s Outlines: Python Emulating Callable Objects  
