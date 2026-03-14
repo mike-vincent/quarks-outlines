@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/7flwv4.png'
 published: true
 id: 3116485
+date: '2026-03-14T12:14:41Z'
 ---
 
 # Quark’s Outlines: Python Emulating Numeric Types  
