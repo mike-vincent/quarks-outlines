@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/nbfuin.png'
 published: true
 id: 3116487
+date: '2026-03-28T12:16:57Z'
 ---
 
 # Quark’s Outlines: Python Execution Frames  
