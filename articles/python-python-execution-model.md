@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/8xnjk6.png'
 published: true
 id: 3116483
+date: '2026-04-04T12:17:30Z'
 ---
 
 # Quark’s Outlines: Python Execution Model  
