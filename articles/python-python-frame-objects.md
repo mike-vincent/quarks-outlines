@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/y26job.png'
 published: true
 id: 3117336
+date: '2026-04-18T12:19:10Z'
 ---
 
 # Quark’s Outlines: Python Frame Objects  
