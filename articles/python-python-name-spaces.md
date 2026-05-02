@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/5jl37u.png'
 published: true
 id: 3116491
+date: '2026-05-02T12:25:50Z'
 ---
 
 # Quark’s Outlines: Python Name Spaces  
