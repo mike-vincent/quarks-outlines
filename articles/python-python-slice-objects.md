@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/u3cwcz.png'
 published: true
 id: 3116488
+date: '2026-05-09T12:27:23Z'
 ---
 
 # Quark’s Outlines: Python Slice Objects  
