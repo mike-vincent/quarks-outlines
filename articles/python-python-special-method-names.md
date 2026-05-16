@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/xrzcbi.png'
 published: true
 id: 3116490
+date: '2026-05-16T12:29:40Z'
 ---
 
 # Quark’s Outlines: Python Special Method Names  
