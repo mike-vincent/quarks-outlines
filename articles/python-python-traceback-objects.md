@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/ikn2vw.png'
 published: true
 id: 3116489
+date: '2026-05-23T12:29:01Z'
 ---
 
 # Quark’s Outlines: Python Traceback Objects  
