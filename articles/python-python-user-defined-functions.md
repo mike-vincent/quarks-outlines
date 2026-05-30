@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/m8itun.png'
 published: true
 id: 3116493
+date: '2026-05-30T12:33:50Z'
 ---
 
 # Quark’s Outlines: Python User-Defined Functions  
