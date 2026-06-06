@@ -10,6 +10,7 @@ series: Quark's Outlines
 cover_image: 'https://files.catbox.moe/5zgeuc.png'
 published: true
 id: 3116492
+date: '2026-06-06T12:36:28Z'
 ---
 
 # Quark’s Outlines: Python User-Defined Methods  
